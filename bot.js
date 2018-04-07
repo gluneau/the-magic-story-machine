@@ -1,3 +1,4 @@
+const steem = require('steem');
 const helper = require('./helper');
 
 const BOT_ACCOUNT_NAME = process.env.BOT_ACCOUNT_NAME || 'the-magic-frog';
@@ -25,8 +26,8 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 
 <sup>\`> end\`<br>Appends "The End!" to the current story and starts a new one. **(Available only after 10th day of a story!)**</sup>
 
-<sup>**Command with highest number of upvotes will be executed tomorrow 12:30 PM (CET)!**</sup>
-<sup>User get's a lottery ticket to win the story pot (50 % author rewards from 10 posts minimum!)</sup>`;
+<sup>**The command with the highest number of upvotes will be executed the next day at 12:30 PM (CET)!**</sup>
+<sup>The user get's a lottery ticket to win the story pot (**50 % of the author rewards from 10 posts minimum!**) every time a story ends.</sup>`;
 
   const newStory = startPhrase + '\n\n' + toBeContinued + footer;
 
