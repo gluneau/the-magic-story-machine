@@ -2,17 +2,24 @@ const steem = require('steem');
 
 module.exports = {
   commands: {
-    end: '> end',
-    image: '> image: ',
+    end: '> !new',
     append: '> '
   },
   getLastPost(accountName) {
     return new Promise((resolve, reject) => {
-      steem.api.getDiscussionsByBlog({tag: accountName, limit: 1}, (err, posts) => {
+      steem.api.getDiscussionsByBlog({tag: accountName, limit: 10}, (err, posts) => {
         if (err) {
           reject(err);
         } else {
-          resolve(posts[0]);
+          for (let i = 0; i < posts.length; i++) {
+            let post = posts[i];
+            let meta = JSON.parse(post.json_metadata);
+            if (meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber')) {
+              resolve(post);
+              return;
+            }
+          }
+          reject('No story posts found in the last 10 posts by ' + accountName + '.');
         }
       });
     });
@@ -31,19 +38,17 @@ module.exports = {
 
           // find first valid command
           for (let i = 0; i < comments.length; i++) {
-            let command = comments[i].body.split('\n')[0];
-
+            let comment = comments[i];
+            let command = comment.body.split('\n')[0];
             if (command === this.commands.end && meta.day > 10) {
-              resolve({type: 'end', append: '# The End!\n\n' + '<small>Thanks @' + command.author + ' and all the others!</small>'})
-              return;
-            } else if (command.indexOf(this.commands.image) === 0) {
-              resolve({type: 'image', append: command.replace(this.commands.image, '') + '\n<small>@' + command.author + '</small>'});
+              resolve({type: 'new', appendText: '# The End!\n\n' + 'Thanks to all the authors!'});
               return;
             } else if (command.indexOf(this.commands.append) === 0 && command.length <= 152) {
-              resolve({type: 'append', append: command.replace(this.commands.append, '') + '\n<small>@' + command.author + '</small>'});
+              resolve({type: 'append', appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'});
               return;
             }
           }
+          reject('no commands');
         } else {
           reject('no commands');
         }
@@ -53,15 +58,21 @@ module.exports = {
   getStoryPart(body, startPhrase, endPhrase) {
     const start = body.indexOf(startPhrase);
     const end = body.indexOf(endPhrase);
-    return body.slice(start, end);
+    if (start !== -1 && end !== -1) {
+      return body.slice(start, end);
+    } else {
+      console.log('Could not find story part in content. :(');
+      return false;
+    }
   },
   post(account, key, body, storyNumber, day) {
-    const tags = ['the-magic-story-machine', 'writing', 'story', 'funny'];
+    // const tags = ['themagicstory', 'writing', 'story', 'funny'];
+    const tags = ['test'];
     const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
     const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
     steem.broadcast.comment(key, '', tags[0], account, permlink, title, body, {tags: tags, storyNumber: storyNumber, day: day}, (err) => {
       if (!err) {
-        steem.broadcast.vote(key, account, account, permlink, 10000);
+        // steem.broadcast.vote(key, account, account, permlink, 10000);
       } else {
         console.log(err);
       }
