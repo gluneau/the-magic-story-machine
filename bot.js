@@ -25,7 +25,7 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 ## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
 ##
 
-<center>The Pot full of Gold:<br>**$ 15.72**<br><sup>(Cast your Upvote Spell on this post or a previous one to raise the pot!)</sup></center>`;
+<center>The Pot full of Gold:<br>**$ 15.72**<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
 
   const footer = `
 
@@ -37,7 +37,7 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 ### <center><sup>Or copy the following template for your comment:</sup></center>
 
 \`\`\`
-> Write here what you want append to the story, in one line. Leave a space after the > and use no more than 250 characters.
+> Write here what you want to append to the story, in one line. Leave a space after the > and use no more than 250 characters.
 
 And here you can write an additional, personal comment. (optional)
 \`\`\` `;
