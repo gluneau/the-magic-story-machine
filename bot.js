@@ -15,30 +15,42 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 
   const startPhrase = '# Once upon a time,';
   const toBeContinued = '## To be continued!';
-  const footer = `<hr>
 
-##### Add to the story or start a new one:
-#####
+  // TODO: make pot value dynamic
+  const intro = `<center>
+![avatar.png](https://steemitimages.com/DQmeK9D1q35gERzGWfQBD9MKGzuU5wjDNSM1q561dbGxdmL/avatar.png)
+</center>
 
-<sup>Simply leave a command in the comments!<br>**The command with the highest number of upvotes will be executed the next day at 12:30 PM (CET)!**</sup>
-<sup>**The user get's a lottery ticket to win the story pot: 50 % of the author rewards from all story posts (10 minimum)! Released every time a story ends.**</sup>
+### <center>It's me again...<br>The Magic Frog</center>
+## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
+##
 
-- <sup>Write \`> word/sentence/whatever\` to add *word/sentence/whatever* to the current story. (Can also contain image urls!)</sup>
-- <sup>Write \`> !new\` to end the current story. The next post will start a new story. **(Available only after the 10th day of a story!)**</sup>
+<center>The Pot full of Gold:<br>**$ 15.72**<br><sup>(Cast your Upvote Spell on this post or a previous one to raise the pot!)</sup></center>`;
 
-<sup>**Important:** The command must be the first line of your comment and 150 characters at most! After that, leave a blank line if you want to add a normal comment.</sup>`;
+  const footer = `
+
+<hr>
+
+### <center><sup>To participate visit:</sup><br>[the-magic-frog.com](http://the-magic-frog.com)</center>
+###
+
+### <center><sup>Or copy the following template for your comment:</sup></center>
+
+\`\`\`
+> Write here what you want append to the story, in one line. Leave a space after the > and use no more than 250 characters.
+
+And here you can write an additional, personal comment. (optional)
+\`\`\` `;
 
   const newStory = startPhrase + '\n\n' + toBeContinued + '\n\n' + footer;
 
-  let story = helper.getStoryPart(lastPost.body, startPhrase, toBeContinued);
+  let story = intro + '\n\n' + helper.getStoryPart(lastPost.body, startPhrase, toBeContinued);
 
   if (command && story) {
-    story += '\n\n' + command.appendText;
-
     if (command.type === 'new') {
       helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1);
     } else if (command.type === 'append') {
-      story += '\n\n' + toBeContinued + footer;
+      story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
       helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1);
     }
 
