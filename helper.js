@@ -43,7 +43,7 @@ module.exports = {
             if (command === this.commands.end && meta.day > 10) {
               resolve({type: 'new', appendText: '# The End!\n\n' + 'Thanks to all the authors!'});
               return;
-            } else if (command.indexOf(this.commands.append) === 0 && command.length <= 152) {
+            } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
               resolve({type: 'append', appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'});
               return;
             }
@@ -66,8 +66,7 @@ module.exports = {
     }
   },
   post(account, key, body, storyNumber, day) {
-    // const tags = ['themagicstory', 'writing', 'story', 'funny'];
-    const tags = ['test'];
+    const tags = ['themagicfrog', 'writing', 'story', 'funny'];
     const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
     const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
     steem.broadcast.comment(key, '', tags[0], account, permlink, title, body, {tags: tags, storyNumber: storyNumber, day: day}, (err) => {
