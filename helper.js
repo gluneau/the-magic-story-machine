@@ -71,7 +71,7 @@ module.exports = {
     const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
     steem.broadcast.comment(key, '', tags[0], account, permlink, title, body, {tags: tags, storyNumber: storyNumber, day: day}, (err) => {
       if (!err) {
-        // steem.broadcast.vote(key, account, account, permlink, 10000);
+        steem.broadcast.vote(key, account, account, permlink, 10000);
       } else {
         console.log(err);
       }
