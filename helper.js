@@ -41,10 +41,10 @@ module.exports = {
             let comment = comments[i];
             let command = comment.body.split('\n')[0];
             if (command === this.commands.end && meta.day > 10) {
-              resolve({type: 'new', appendText: '# The End!\n\n' + 'Thanks to all the authors!'});
+              resolve({type: 'new', author: comment.author, appendText: '# The End!\n\n' + 'Thanks to all the authors!'});
               return;
             } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
-              resolve({type: 'append', appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'});
+              resolve({type: 'append', author: comment.author, appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'});
               return;
             }
           }
@@ -65,11 +65,20 @@ module.exports = {
       return false;
     }
   },
-  post(account, key, body, storyNumber, day) {
+  addParticipant(author, participants) {
+    if (participants.hasOwnProperty(author)) {
+      participants[author]++;
+    } else {
+      participants[author] = 1;
+    }
+    return participants;
+  },
+  post(account, key, body, storyNumber, day, participants) {
     const tags = ['themagicfrog', 'writing', 'story', 'funny'];
     const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
     const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
-    steem.broadcast.comment(key, '', tags[0], account, permlink, title, body, {tags: tags, storyNumber: storyNumber, day: day}, (err) => {
+    const meta = {tags: tags, storyNumber: storyNumber, day: day, participants: participants};
+    steem.broadcast.comment(key, '', tags[0], account, permlink, title, body, meta, (err) => {
       if (!err) {
         steem.broadcast.vote(key, account, account, permlink, 10000);
       } else {
