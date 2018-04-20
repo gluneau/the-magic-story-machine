@@ -25,7 +25,7 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 ## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
 ##
 
-<center>The Pot full of Gold:<br>**$ 15.72**<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
+<center>The Pot full of Gold:<br>**$ 19.34**<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
 
   const footer = `
 
@@ -42,19 +42,17 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 And here you can write an additional, personal comment. (optional)
 \`\`\` `;
 
-  const newStory = startPhrase + '\n\n' + toBeContinued + '\n\n' + footer;
+  const newStory = intro + '\n\n' + startPhrase + '\n\n' + toBeContinued + '\n\n' + footer;
 
   let story = intro + '\n\n' + helper.getStoryPart(lastPost.body, startPhrase, toBeContinued);
 
   if (command && story) {
     if (command.type === 'new') {
-      helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1);
+      helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1, {});
     } else if (command.type === 'append') {
       story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
-      helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1);
+      let participants = helper.addParticipant(command.author, lastPostMeta.participants);
+      helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
     }
-
-    // upvote comment
-    // helper.upvote(BOT_KEY, BOT_ACCOUNT_NAME, command.comment.author, command.comment.permlink, 10000);
   }
 })();
