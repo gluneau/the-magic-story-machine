@@ -2,58 +2,87 @@ const steem = require('steem');
 
 module.exports = {
   commands: {
-    end: '> !new',
+    end: '> The End!',
     append: '> '
   },
-  getLastPost(accountName) {
+  getPosts(accountName, limit = 100) {
+    // TODO: make this recursive to get ALL posts
     return new Promise((resolve, reject) => {
-      steem.api.getDiscussionsByBlog({tag: accountName, limit: 10}, (err, posts) => {
+      steem.api.getDiscussionsByBlog({tag: accountName, limit: limit}, (err, posts) => {
         if (err) {
           reject(err);
         } else {
-          for (let i = 0; i < posts.length; i++) {
-            let post = posts[i];
-            let meta = JSON.parse(post.json_metadata);
-            if (meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber')) {
-              resolve(post);
-              return;
-            }
-          }
-          reject('No story posts found in the last 10 posts by ' + accountName + '.');
+          resolve(posts);
         }
       });
     });
   },
-  getMostUpvotedCommand(post, meta) {
+  getComments(accountName, permlink) {
     return new Promise((resolve, reject) => {
-      steem.api.getContentReplies(post.author, post.permlink, (err, comments) => {
+      steem.api.getContentReplies(accountName, permlink, function(err, comments) {
         if (err) {
           reject(err);
-        } else if (comments.length) {
-          // sort by votes
-          comments.sort(function(a, b){
-            return a.net_votes - b.net_votes;
-          });
-          comments = comments.reverse();
-
-          // find first valid command
-          for (let i = 0; i < comments.length; i++) {
-            let comment = comments[i];
-            let command = comment.body.split('\n')[0];
-            if (command === this.commands.end && meta.day > 10) {
-              resolve({type: 'new', author: comment.author, appendText: '# The End!\n\n' + 'Thanks to all the authors!'});
-              return;
-            } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
-              resolve({type: 'append', author: comment.author, appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'});
-              return;
-            }
-          }
-          reject('no commands');
         } else {
-          reject('no commands');
+          resolve(comments);
         }
       });
-    })
+    });
+  },
+  getAllStoryPosts(posts) {
+    return posts.filter(post => {
+      let meta = JSON.parse(post.json_metadata);
+      return meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber');
+    });
+  },
+  getCurrentStoryPosts(allStoryPosts, storyNumber) {
+    return allStoryPosts.filter(post => {
+      let meta = JSON.parse(post.json_metadata);
+      return parseInt(meta.storyNumber) === storyNumber
+    });
+  },
+  getPotValue(currentStoryPosts) {
+    let pot = 0;
+    for (let i = 0; i < currentStoryPosts.length; i++) {
+      pot += parseFloat(this.getPostPot(currentStoryPosts[i]));
+    }
+    return pot.toFixed(2);
+  },
+  getPostPot(post) {
+    if (post.last_payout === '1970-01-01T00:00:00') {
+      return parseFloat(post.pending_payout_value.replace(' SBD', '')) * 0.75 / 2;
+    }
+
+    return (parseFloat(post.total_payout_value.replace(' SBD', '')) / 2).toFixed(2);
+  },
+  getMostUpvotedCommand(comments, canEnd) {
+    if (comments.length) {
+      // sort by votes
+      comments.sort(function(a, b){
+        return a.net_votes - b.net_votes;
+      });
+      comments = comments.reverse();
+
+      // find first valid command
+      for (let i = 0; i < comments.length; i++) {
+        let comment = comments[i];
+        let command = comment.body.split('\n')[0];
+        if (command === this.commands.end && canEnd) {
+          return {
+            type: 'end',
+            author: comment.author,
+            appendText: '### <center>The End!</center>\n\n'
+          };
+        } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
+          return {
+            type: 'append',
+            author: comment.author,
+            appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'
+          };
+        }
+      }
+    }
+
+    return null;
   },
   getStoryPart(body, startPhrase, endPhrase) {
     const start = body.indexOf(startPhrase);
