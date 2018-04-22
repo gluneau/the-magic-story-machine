@@ -23,10 +23,10 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
   if (posts) {
     // prepare data
     const allStoryPosts = helper.getAllStoryPosts(posts);
-    const currentStoryPosts = helper.getCurrentStoryPosts(allStoryPosts);
-    const lastPost = currentStoryPosts[0];
-    const pot = helper.getPotValue(currentStoryPosts);
+    const lastPost = allStoryPosts[0];
     const lastPostMeta = JSON.parse(lastPost.json_metadata);
+    const currentStoryPosts = helper.getCurrentStoryPosts(allStoryPosts, lastPostMeta.storyNumber);
+    const pot = helper.getPotValue(currentStoryPosts);
     const command = helper.getMostUpvotedCommand(comments, lastPostMeta.day > 10);
 
     const startPhrase = '# Once upon a time,';
@@ -40,7 +40,7 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 ## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
 ##
 
-<center>The Pot full of Gold:<br>**$ ${pot}**<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
+<center>The Pot full of Gold:<br>[**$ ${pot}**](http://the-magic-frog.com)<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
 
     const footer = `
 
@@ -66,15 +66,15 @@ And here you can write an additional, personal comment. (optional)
         // post last story post
         story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
         let participants = helper.addParticipant(command.author, lastPostMeta.participants);
-        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
+        // helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
 
         // start new story
-        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1, {});
+        // helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1, {});
       } else if (command.type === 'append') {
         // post next story post
         story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
         let participants = helper.addParticipant(command.author, lastPostMeta.participants);
-        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
+        // helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
       }
     }
   }
