@@ -66,15 +66,15 @@ And here you can write an additional, personal comment. (optional)
         // post last story post
         story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
         let participants = helper.addParticipant(command.author, lastPostMeta.participants);
-        // helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
+        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
 
         // start new story
-        // helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1, {});
+        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1, {});
       } else if (command.type === 'append') {
         // post next story post
         story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
         let participants = helper.addParticipant(command.author, lastPostMeta.participants);
-        // helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
+        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
       }
     }
   }
