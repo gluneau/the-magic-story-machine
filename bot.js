@@ -55,7 +55,9 @@ if (!BOT_ACCOUNT_NAME || !BOT_KEY) {
 > Write here what you want to append to the story, in one line. Leave a space after the > and use no more than 250 characters.
 
 And here you can write an additional, personal comment. (optional)
-\`\`\` `;
+\`\`\`
+
+<center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>`;
 
     const newStory = intro + '\n\n' + startPhrase + '\n\n' + toBeContinued + '\n\n' + footer;
 
