@@ -61,22 +61,22 @@ And here you can write an additional, personal comment. (optional)
 
     const newStory = intro + '\n\n' + startPhrase + '\n\n' + toBeContinued + '\n\n' + footer;
 
-    let story = intro + '\n\n' + helper.getStoryPart(lastPost.body, startPhrase, toBeContinued);
+    let currentStory = intro + '\n\n' + helper.getStoryPart(lastPost.body, startPhrase, toBeContinued);
 
-    if (command && story) {
+    if (command && currentStory) {
       if (command.type === 'end') {
         // post last story post
-        story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
+        currentStory += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
         let participants = helper.addParticipant(command.author, lastPostMeta.participants);
-        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
+        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, currentStory, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
 
         // start new story
         helper.post(BOT_ACCOUNT_NAME, BOT_KEY, newStory, lastPostMeta.storyNumber + 1, 1, {});
       } else if (command.type === 'append') {
         // post next story post
-        story += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
+        currentStory += '\n\n' + command.appendText + '\n\n' + toBeContinued + footer;
         let participants = helper.addParticipant(command.author, lastPostMeta.participants);
-        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, story, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
+        helper.post(BOT_ACCOUNT_NAME, BOT_KEY, currentStory, lastPostMeta.storyNumber, lastPostMeta.day + 1, participants);
       }
     }
   }
