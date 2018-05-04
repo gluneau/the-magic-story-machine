@@ -4,10 +4,7 @@ module.exports = {
   BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
   BOT_KEY: process.env.BOT_KEY,
   BOT_TAGS: process.env.BOT_TAGS,
-  commands: {
-    end: '> The End!',
-    append: '> '
-  },
+  commands: ['end', 'append'],
   getPosts(limit = 100) {
     // TODO: make this recursive to get ALL posts
     return new Promise((resolve, reject) => {
@@ -74,21 +71,15 @@ module.exports = {
       // find first valid command
       for (let i = 0; i < comments.length; i++) {
         let comment = comments[i];
-        let meta = JSON.parse(comment.json_metadata);
-        let command = comment.body.split('\n')[0];
-        if (this.commands.hasOwnProperty(meta.type)) {
-          if (command === this.commands.end && canEnd) {
-            return {
-              type: 'end',
-              author: comment.author,
-              appendText: '## <center>The End!</center>'
-            };
-          } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
-            return {
-              type: 'append',
-              author: comment.author,
-              appendText: command.replace(this.commands.append, '').trim()
-            };
+        let command = JSON.parse(comment.json_metadata);
+        if (
+          command.hasOwnProperty('type') &&
+          command.hasOwnProperty('appendText') &&
+          this.commands.indexOf(command.type) !== -1
+        ) {
+          if ((command.type === 'end' && canEnd) || (command.type === 'append' && command.appendText.length < 251)) {
+            command.author = comment.author;
+            return command;
           }
         }
       }
@@ -134,10 +125,8 @@ And here you can write an additional, personal comment. (optional)
 <center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>`;
   },
   post(body, meta, storyNumber, day) {
-    // const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
-    // const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
-    const title = 'Test ' + storyNumber + ' D ' + day;
-    const permlink = 'test-' + storyNumber + '-' + day;
+    const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
+    const permlink = 'the-magic-story-' + storyNumber + '-day-' + day + '-' + (new Date()).getTime();
 
     meta.storyNumber = storyNumber;
     meta.day = day;
