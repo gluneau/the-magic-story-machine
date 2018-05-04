@@ -1,14 +1,17 @@
 const steem = require('steem');
 
 module.exports = {
+  BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
+  BOT_KEY: process.env.BOT_KEY,
+  BOT_TAGS: process.env.BOT_TAGS,
   commands: {
     end: '> The End!',
     append: '> '
   },
-  getPosts(accountName, limit = 100) {
+  getPosts(limit = 100) {
     // TODO: make this recursive to get ALL posts
     return new Promise((resolve, reject) => {
-      steem.api.getDiscussionsByBlog({tag: accountName, limit: limit}, (err, posts) => {
+      steem.api.getDiscussionsByBlog({tag: this.BOT_ACCOUNT_NAME, limit: limit}, (err, posts) => {
         if (err) {
           reject(err);
         } else {
@@ -17,9 +20,9 @@ module.exports = {
       });
     });
   },
-  getComments(accountName, permlink) {
+  getComments(permlink) {
     return new Promise((resolve, reject) => {
-      steem.api.getContentReplies(accountName, permlink, function(err, comments) {
+      steem.api.getContentReplies(this.BOT_ACCOUNT_NAME, permlink, function(err, comments) {
         if (err) {
           reject(err);
         } else {
@@ -31,7 +34,12 @@ module.exports = {
   getAllStoryPosts(posts) {
     return posts.filter(post => {
       let meta = JSON.parse(post.json_metadata);
-      return meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber');
+
+      return meta.hasOwnProperty('day') &&
+        meta.hasOwnProperty('storyNumber') &&
+        meta.hasOwnProperty('commands') &&
+        meta.hasOwnProperty('startPhrase') &&
+        meta.hasOwnProperty('toBeContinued');
     });
   },
   getCurrentStoryPosts(allStoryPosts, storyNumber) {
@@ -45,6 +53,7 @@ module.exports = {
     for (let i = 0; i < currentStoryPosts.length; i++) {
       pot += parseFloat(this.getPostPot(currentStoryPosts[i]));
     }
+    pot *= 0.95; // 5 % goes to beneficiaries
     return pot.toFixed(2);
   },
   getPostPot(post) {
@@ -65,61 +74,97 @@ module.exports = {
       // find first valid command
       for (let i = 0; i < comments.length; i++) {
         let comment = comments[i];
+        let meta = JSON.parse(comment.json_metadata);
         let command = comment.body.split('\n')[0];
-        if (command === this.commands.end && canEnd) {
-          return {
-            type: 'end',
-            author: comment.author,
-            appendText: '### <center>The End!</center>\n\n'
-          };
-        } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
-          return {
-            type: 'append',
-            author: comment.author,
-            appendText: command.replace(this.commands.append, '').trim() + '\n<sup>(by @' + comment.author + ')</sup>'
-          };
+        if (this.commands.hasOwnProperty(meta.type)) {
+          if (command === this.commands.end && canEnd) {
+            return {
+              type: 'end',
+              author: comment.author,
+              appendText: '## <center>The End!</center>'
+            };
+          } else if (command.indexOf(this.commands.append) === 0 && command.length <= 252) {
+            return {
+              type: 'append',
+              author: comment.author,
+              appendText: command.replace(this.commands.append, '').trim()
+            };
+          }
         }
       }
     }
 
     return null;
   },
-  getStoryPart(body, startPhrase, endPhrase) {
-    const start = body.indexOf(startPhrase);
-    const end = body.indexOf(endPhrase);
-    if (start !== -1 && end !== -1) {
-      return body.slice(start, end);
-    } else {
-      console.log('Could not find story part in content. :(');
-      return false;
-    }
+  hasStoryEnded(commands) {
+    return commands.length && commands[commands.length - 1].type === 'end';
   },
-  addParticipant(author, participants) {
-    if (participants.hasOwnProperty(author)) {
-      participants[author]++;
-    } else {
-      participants[author] = 1;
-    }
-    return participants;
+  buildStoryBody(commands) {
+    let storyBody = '';
+    commands.forEach(command => storyBody += command.appendText + '\n' + '<sup>by @' + command.author + '</sup>\n\n');
+    return storyBody;
   },
-  post(account, key, body, storyNumber, day, participants) {
-    const tags = ['themagicfrog', 'writing', 'story', 'funny'];
-    const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
-    const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
-    const meta = {tags: tags, storyNumber: storyNumber, day: day, participants: participants};
-    steem.broadcast.comment(key, '', tags[0], account, permlink, title, body, meta, (err) => {
+  getPostIntro(pot) {
+    return `<center>
+![avatar.png](https://steemitimages.com/DQmeK9D1q35gERzGWfQBD9MKGzuU5wjDNSM1q561dbGxdmL/avatar.png)
+</center>
+
+### <center>It's me again...<br>The Magic Frog</center>
+## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
+##
+
+<center>The Pot full of Gold:<br>[**$ ${pot}**](http://the-magic-frog.com)<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
+  },
+  getPostFooter() {
+    return `
+
+<hr>
+
+### <center><sup>To participate visit:</sup><br>[the-magic-frog.com](http://the-magic-frog.com)</center>
+###
+
+### <center><sup>Or copy the following template for your comment:</sup></center>
+
+\`\`\`
+> Write here what you want to append to the story, in one line. Leave a space after the > and use no more than 250 characters.
+
+And here you can write an additional, personal comment. (optional)
+\`\`\`
+
+<center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>`;
+  },
+  post(body, meta, storyNumber, day) {
+    // const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
+    // const permlink = 'the-magic-story-' + storyNumber + '-day-' + day;
+    const title = 'Test ' + storyNumber + ' D ' + day;
+    const permlink = 'test-' + storyNumber + '-' + day;
+
+    meta.storyNumber = storyNumber;
+    meta.day = day;
+    meta.tags = this.BOT_TAGS.split(',').map(tag => tag.trim());
+
+    steem.broadcast.comment(this.BOT_KEY, '', meta.tags[0], this.BOT_ACCOUNT_NAME, permlink, title, body, meta, (err) => {
       if (!err) {
-        steem.broadcast.vote(key, account, account, permlink, 10000);
+        // set beneficiaries
+        const extensions = [[0, {
+          beneficiaries: [
+            {
+              account: 'mkt',
+              weight: 500
+            }
+          ]
+        }]];
+        steem.broadcast.commentOptions(this.BOT_KEY, this.BOT_ACCOUNT_NAME, permlink, '1000000.000 SBD', 5000, true, true, extensions);
+
+        // vote
+        steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, this.BOT_ACCOUNT_NAME, permlink, 10000);
       } else {
         console.log(err);
       }
     });
   },
-  update(account, key, body, storyNumber, day) {
-    this.post(account, key, body, storyNumber, day)
-  },
-  upvote(key, account, comment, weight) {
-    steem.broadcast.vote(key, account, comment.author, comment.permlink, weight, (err) => {
+  upvote(comment, weight) {
+    steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
       console.log(err);
     });
   }
