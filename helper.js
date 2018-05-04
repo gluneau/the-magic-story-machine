@@ -114,14 +114,6 @@ module.exports = {
 ### <center><sup>To participate visit:</sup><br>[the-magic-frog.com](http://the-magic-frog.com)</center>
 ###
 
-### <center><sup>Or copy the following template for your comment:</sup></center>
-
-\`\`\`
-> Write here what you want to append to the story, in one line. Leave a space after the > and use no more than 250 characters.
-
-And here you can write an additional, personal comment. (optional)
-\`\`\`
-
 <center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>`;
   },
   post(body, meta, storyNumber, day) {
