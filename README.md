@@ -18,6 +18,7 @@ You also need to export two environment variables:
 ```
 export BOT_ACCOUNT_NAME=account-name
 export BOT_KEY=PostingKey
+export BOT_TAGS=themagicfrog,writing,story,funny
 ```
 
 The bot needs one initial post that you have to set up manually. This post must contain the following `json_metadata`:
@@ -27,7 +28,7 @@ The bot needs one initial post that you have to set up manually. This post must 
   day: 1,
   storyNumber: 1,
   commands: [],
-  startPhrase: '# Once upon a time,'
-  toBeContinued: '## To be continued!'
+  startPhrase: 'Once upon a time,'
+  toBeContinued: 'To be continued!'
 }
 ```
