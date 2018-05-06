@@ -33,7 +33,8 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
     const storyHasEnded = helper.hasStoryEnded(lastPostMeta.commands);
     const currentStoryPosts = helper.getCurrentStoryPosts(allStoryPosts, lastPostMeta.storyNumber);
     const pot = helper.getPotValue(currentStoryPosts);
-    const command = helper.getMostUpvotedCommand(comments, lastPostMeta.day > 10);
+    const validComments = helper.getAllValidComments(comments, lastPostMeta.day > 10);
+    const command = helper.getMostUpvotedCommand(validComments);
     const intro = helper.getPostIntro(pot);
     const footer = helper.getPostFooter();
 
@@ -68,6 +69,17 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
           lastPostMeta.day + 1
         );
       }
+    }
+
+    // upvote comments
+    if (validComments.length) {
+      let weight = 10000; // 100% for the first one
+      validComments.forEach(comment => {
+        setTimeout(() => {
+          helper.upvote(comment, weight);
+          weight = 1000; // 10% for all others
+        }, 5000);
+      });
     }
   }
 })();

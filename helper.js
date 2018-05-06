@@ -60,7 +60,9 @@ module.exports = {
 
     return (parseFloat(post.total_payout_value.replace(' SBD', '')) / 2).toFixed(2);
   },
-  getMostUpvotedCommand(comments, canEnd) {
+  getAllValidComments(comments, canEnd) {
+    let validComments = [];
+
     if (comments.length) {
       // sort by votes
       comments.sort(function(a, b){
@@ -68,21 +70,31 @@ module.exports = {
       });
       comments = comments.reverse();
 
-      // find first valid command
+      // find valid commands
       for (let i = 0; i < comments.length; i++) {
         let comment = comments[i];
-        let command = JSON.parse(comment.json_metadata);
-        if (
-          command.hasOwnProperty('type') &&
-          command.hasOwnProperty('appendText') &&
-          this.commands.indexOf(command.type) !== -1
-        ) {
-          if ((command.type === 'end' && canEnd) || (command.type === 'append' && command.appendText.length < 251)) {
-            command.author = comment.author;
-            return command;
+        if (comment.json_metadata) {
+          let command = JSON.parse(comment.json_metadata);
+          if (
+            command.hasOwnProperty('type') &&
+            command.hasOwnProperty('appendText') &&
+            command.hasOwnProperty('image') &&
+            command.hasOwnProperty('comment') &&
+            this.commands.indexOf(command.type) !== -1
+          ) {
+            if ((command.type === 'end' && canEnd) || (command.type === 'append' && command.appendText.length < 251)) {
+              validComments.push(comment);
+            }
           }
         }
       }
+    }
+
+    return validComments;
+  },
+  getMostUpvotedCommand(validComments) {
+    if (validComments.length) {
+      return JSON.parse(validComments[0].json_metadata);
     }
 
     return null;
