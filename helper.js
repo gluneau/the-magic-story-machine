@@ -92,7 +92,7 @@ module.exports = {
   },
   buildStoryBody(commands) {
     let storyBody = '';
-    commands.forEach(command => storyBody += command.appendText + '\n' + '<sup>by @' + command.author + '</sup>\n\n');
+    commands.forEach(command => storyBody += command.appendText + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n');
     return storyBody;
   },
   getPostIntro(pot) {
