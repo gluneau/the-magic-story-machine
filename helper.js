@@ -157,8 +157,26 @@ module.exports = {
     });
   },
   upvote(comment, weight) {
-    steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
-      console.log(err);
+    steem.api.getActiveVotes(comment.author, comment.permlink, function(err, result) {
+      if (err) {
+        console.log(err);
+      } else {
+        // check if already voted
+        let voted = false;
+        result.forEach((vote) => {
+          if (vote.voter === this.BOT_ACCOUNT_NAME) {
+            voted = true;
+          }
+        });
+
+        // vote
+        if (!voted) {
+          steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
+            console.log(err);
+          });
+
+        }
+      }
     });
   }
 };
