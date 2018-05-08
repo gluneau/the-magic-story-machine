@@ -41,7 +41,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
     if (storyHasEnded) {
       // start new story
       helper.post(
-        intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + lastPostMeta.toBeContinued + '\n\n' + footer,
+        intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
         lastPostMeta,
         lastPostMeta.storyNumber + 1,
         1
@@ -63,7 +63,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
       } else if (command.type === 'append') {
         // publish next story post
         helper.post(
-          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n' + lastPostMeta.toBeContinued + footer,
+          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n## ' + lastPostMeta.toBeContinued + footer,
           lastPostMeta,
           lastPostMeta.storyNumber,
           lastPostMeta.day + 1
