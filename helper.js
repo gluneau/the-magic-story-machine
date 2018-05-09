@@ -32,11 +32,7 @@ module.exports = {
     return posts.filter(post => {
       let meta = JSON.parse(post.json_metadata);
 
-      return meta.hasOwnProperty('day') &&
-        meta.hasOwnProperty('storyNumber') &&
-        meta.hasOwnProperty('commands') &&
-        meta.hasOwnProperty('startPhrase') &&
-        meta.hasOwnProperty('toBeContinued');
+      return meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber')
     });
   },
   getCurrentStoryPosts(allStoryPosts, storyNumber) {
