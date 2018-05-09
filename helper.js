@@ -100,7 +100,15 @@ module.exports = {
   },
   buildStoryBody(commands) {
     let storyBody = '';
-    commands.forEach(command => storyBody += command.appendText + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n');
+    commands.forEach(command => {
+      if (command.appendText && command.image) {
+        storyBody += command.appendText + '\n\n' + command.image + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n';
+      } else if (command.appendText) {
+        storyBody += command.appendText + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n';
+      } else if (command.image) {
+        storyBody += command.image + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n';
+      }
+    });
     return storyBody;
   },
   getPostIntro(pot) {
