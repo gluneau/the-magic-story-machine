@@ -177,7 +177,9 @@ module.exports = {
         // vote
         if (!voted) {
           steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
-            console.log(err);
+            if (err) {
+              console.log(err);
+            }
           });
         }
       }
