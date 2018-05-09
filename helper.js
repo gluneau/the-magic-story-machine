@@ -169,7 +169,7 @@ module.exports = {
         // check if already voted
         let voted = false;
         result.forEach((vote) => {
-          if (vote.voter === this.BOT_ACCOUNT_NAME) {
+          if (vote.voter === this.BOT_ACCOUNT_NAME && vote.percent > 0) {
             voted = true;
           }
         });
