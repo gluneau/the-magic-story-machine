@@ -162,7 +162,7 @@ module.exports = {
     });
   },
   upvote(comment, weight) {
-    steem.api.getActiveVotes(comment.author, comment.permlink, function(err, result) {
+    steem.api.getActiveVotes(comment.author, comment.permlink, (err, result) => {
       if (err) {
         console.log(err);
       } else {
@@ -179,7 +179,6 @@ module.exports = {
           steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
             console.log(err);
           });
-
         }
       }
     });
