@@ -84,15 +84,34 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
 
     // upvote comments
     if (validComments.length) {
-      console.log('Upvoting commands:');
-      let weight = 10000; // 100% for the first one
-      validComments.forEach(comment => {
-        setTimeout(() => {
-          console.log('Upvoting @' + comment.author + '/' + comment.permlink);
-          helper.upvote(comment, weight);
-          weight = 1000; // 10% for all others
-        }, 5000);
-      });
+      console.log('Upvoting ' + validComments.length + ' comments:');
+
+      // calculate voting weights:
+      // - we assume that we start at 100% voting power every day and we don't want to go below 80% to be fully recovered the next day
+      // - the post that just got published already got a 100% vote, so we are at 98% now
+      // - the winner comment will also get a 100% vote, leaving us at 96% voting power (roughly, actually a bit more)
+      // - if there are more comments (hopefully :D) then we have 16% voting power left until we went down to 80%
+      // - those 16% will then be distributed across all remaining comments
+      // - if there are not that many comments, they will also receive a 100% vote
+      // - (use timeouts to make sure we don't get a "don't be hasty" error from steem)
+
+      // get the first/winning comment (removing it from the array) and vote at 100%
+      let winningComment = validComments.shift();
+      setTimeout(() => {
+        console.log('Upvoting @' + winningComment.author + '/' + winningComment.permlink + ' (Weight: 100%)');
+        helper.upvote(winningComment, 10000);
+      }, 5000);
+
+      // if there are comments left... do some math and then vote
+      if (validComments.length) {
+        let weight = Math.min(((16 / validComments.length) / 2 * 100), 100).toFixed(2) * 100;
+        validComments.forEach((comment, i) => {
+          setTimeout(() => {
+            console.log('Upvoting @' + comment.author + '/' + comment.permlink + ' (' + weight / 100 + ' %)');
+            helper.upvote(comment, weight);
+          }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on the winning comment (which itself is 5s after the vote on the story post)
+        });
+      }
     }
   }
 })();
