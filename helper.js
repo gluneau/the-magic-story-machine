@@ -135,6 +135,7 @@ module.exports = {
     meta.storyNumber = storyNumber;
     meta.day = day;
     meta.tags = this.BOT_TAGS.split(',').map(tag => tag.trim());
+    meta.app = 'the-magic-story-machine/0.1';
 
     steem.broadcast.comment(this.BOT_KEY, '', meta.tags[0], this.BOT_ACCOUNT_NAME, permlink, title, body, meta, (err) => {
       if (!err) {
