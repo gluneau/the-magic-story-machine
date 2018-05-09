@@ -1,6 +1,8 @@
-const helper = require('./helper');
-
 // TODO: add more verbose logs
+// TODO: automatic reward distribution
+// TODO: multilanguage support
+
+const helper = require('./helper');
 
 if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
   console.log('You forgot to set the necessary environment variables!');
