@@ -81,8 +81,6 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
         console.log('Master! There is not enough gold to distribute all the rewards!');
       }
 
-      process.exit();
-
       // start new story
       console.log('Story has ended. Starting a new one...');
       helper.post(
