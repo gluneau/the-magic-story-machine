@@ -9,8 +9,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
 }
 
 (async () => {
+  // get all posts from bot account and all comments from latest story post
   console.log('Fetching data...');
-  // get data: all posts from bot account and all comments from latest story post
+  let account = await helper.getAccount();
   let posts = await helper.getPosts();
   let comments = [];
   for (let i = 0; i < posts.length; i++) {
@@ -28,7 +29,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
     }
   }
 
-  if (posts) {
+  if (posts.length && comments.length && account) {
     // prepare data
     const allStoryPosts = helper.getAllStoryPosts(posts);
     const lastPost = allStoryPosts[0];
@@ -46,7 +47,42 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
     console.log('Most upvoted command: ' + JSON.stringify(command));
     console.log('Pot value: ' + pot);
 
-    if (storyHasEnded) {
+    if (true || storyHasEnded) {
+      // claim rewards and update account
+      console.log('Claiming Rewards...');
+      account = await helper.claimRewards(account);
+
+      // distribute rewards if possible
+      if (parseFloat(account.sbd_balance) >= pot) {
+        // prepare data
+        const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others... lol as if you would randomly choose someone who is the only one who gets nothing... :D
+        const winnerPot = (pot * splitRatio);
+        const luckyNumber = Math.floor(Math.random() * lastPostMeta.commands.length);
+        const winnerCommand = lastPostMeta.commands[luckyNumber];
+        const loserPot = (pot * (1 - splitRatio));
+        const loserCommands = lastPostMeta.commands.filter(command => {
+          return command.author !== winnerCommand.author;
+        });
+        const singleUserPot = loserPot / loserCommands.length;
+
+        console.log('Story has ended. Distributing rewards.');
+        console.log('Aaaaand the winner is: ' + winnerCommand.author);
+
+        // transfer winner pot
+        console.log('Transferring ' + winnerPot.toFixed(3) + ' SBD to ' + winnerCommand.author + '...');
+        helper.transfer(winnerCommand.author, winnerPot, 'Congratulations! The story has ended and you won half the pot! Thanks for participating!');
+
+        // transfer loser splitpot
+        loserCommands.forEach(loserCommand => {
+          console.log('Transferring ' + singleUserPot.toFixed(3) + ' SBD to ' + loserCommand.author + '...');
+          helper.transfer(loserCommand.author, singleUserPot, 'The story has ended! Here\'s your part of the pot. Thanks for participating!');
+        })
+      } else {
+        console.log('Master! There is not enough gold to distribute all the rewards!');
+      }
+
+      process.exit();
+
       // start new story
       console.log('Story has ended. Starting a new one...');
       helper.post(

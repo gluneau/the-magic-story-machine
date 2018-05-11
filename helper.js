@@ -19,13 +19,55 @@ module.exports = {
   },
   getComments(permlink) {
     return new Promise((resolve, reject) => {
-      steem.api.getContentReplies(this.BOT_ACCOUNT_NAME, permlink, function(err, comments) {
+      steem.api.getContentReplies(this.BOT_ACCOUNT_NAME, permlink, (err, comments) => {
         if (err) {
           reject(err);
         } else {
           resolve(comments);
         }
       });
+    });
+  },
+  getAccount() {
+    return new Promise((resolve, reject) => {
+      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) => {
+        if (err || users.length === 0) {
+          reject(err);
+        } else {
+          resolve(users[0]);
+        }
+      });
+    });
+  },
+  claimRewards(account) {
+    return new Promise((resolve, reject) => {
+      if (
+        parseFloat(account.reward_steem_balance) > 0 ||
+        parseFloat(account.reward_sbd_balance) > 0 ||
+        parseFloat(account.reward_vesting_balance) > 0
+      ) {
+        steem.broadcast.claimRewardBalance(this.BOT_KEY, this.BOT_ACCOUNT_NAME, account.reward_steem_balance, account.reward_sbd_balance, account.reward_vesting_balance, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) =>  {
+              if (err || users.length === 0) {
+                reject(err);
+              } else {
+                resolve(users[0]);
+              }
+            });
+          }
+        });
+      } else {
+        steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) =>  {
+          if (err || users.length === 0) {
+            reject(err);
+          } else {
+            resolve(users[0]);
+          }
+        });
+      }
     });
   },
   getAllStoryPosts(posts) {
@@ -47,7 +89,7 @@ module.exports = {
       pot += parseFloat(this.getPostPot(currentStoryPosts[i]));
     }
     pot *= 0.95; // 5 % goes to beneficiaries
-    return pot.toFixed(2);
+    return pot;
   },
   getPostPot(post) {
     if (post.last_payout === '1970-01-01T00:00:00') {
@@ -61,7 +103,7 @@ module.exports = {
 
     if (comments.length) {
       // sort by votes
-      comments.sort(function(a, b){
+      comments.sort((a, b) => {
         return a.net_votes - b.net_votes;
       });
       comments = comments.reverse();
@@ -112,6 +154,7 @@ module.exports = {
     return storyBody;
   },
   getPostIntro(pot) {
+    pot = pot.toFixed(2);
     return `<center>
 ![avatar.png](https://steemitimages.com/DQmeK9D1q35gERzGWfQBD9MKGzuU5wjDNSM1q561dbGxdmL/avatar.png)
 </center>
@@ -182,6 +225,13 @@ module.exports = {
             }
           });
         }
+      }
+    });
+  },
+  transfer(to, amount, memo) {
+    steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, amount.toFixed(3) + ' SBD', memo, function(err, result) {
+      if (err) {
+        console.log(err);
       }
     });
   }
