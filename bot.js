@@ -47,7 +47,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
     console.log('Most upvoted command: ' + JSON.stringify(command));
     console.log('Pot value: ' + pot);
 
-    if (true || storyHasEnded) {
+    if (storyHasEnded) {
       // claim rewards and update account
       console.log('Claiming Rewards...');
       account = await helper.claimRewards(account);
