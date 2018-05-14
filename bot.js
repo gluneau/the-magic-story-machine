@@ -70,19 +70,32 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
 
         // transfer winner pot
         console.log('Transferring ' + winnerPot.toFixed(3) + ' SBD to ' + winnerCommand.author + '...');
-        helper.transfer(winnerCommand.author, winnerPot, 'Congratulations! The story has ended and you won half the pot! Thanks for participating!');
+        helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(winnerCommand.author, winnerPot, lastPostMeta.storyNumber));
 
         // transfer loser splitpot
+        // count contributions
+        let transfers = {};
         loserCommands.forEach(loserCommand => {
-          console.log('Transferring ' + singleUserPot.toFixed(3) + ' SBD to ' + loserCommand.author + '...');
-          helper.transfer(loserCommand.author, singleUserPot, 'The story has ended! Here\'s your part of the pot. Thanks for participating!');
-        })
+          if (transfers.hasOwnProperty(loserCommand.author)) {
+            transfers[loserCommand.author]++;
+          } else {
+            transfers[loserCommand.author] = 1;
+          }
+        });
+
+        // transferring
+        transfers.forEach((contributionCount, author) => {
+          let amount = contributionCount * singleUserPot;
+          console.log('Transferring ' + amount.toFixed(3) + ' SBD to ' + author + '...');
+          helper.transfer(author, amount, helper.getLoserTransferMemo(author, amount, lastPostMeta.storyNumber, contributionCount));
+        });
       } else {
         console.log('Master! There is not enough gold to distribute all the rewards!');
       }
 
       // start new story
       console.log('Story has ended. Starting a new one...');
+      lastPostMeta.commands = [];
       helper.post(
         intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
         lastPostMeta,

@@ -175,6 +175,12 @@ module.exports = {
 
 <center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>`;
   },
+  getWinnerTransferMemo(receiver, amount, storyNumber) {
+    return `Congratulations @${receiver}! The Magic Story #${storyNumber} has ended and you won half of the pot! That\'s ${amount.toFixed(3)} SBD. Wow! Thanks for participating!`;
+  },
+  getLoserTransferMemo(receiver, amount, storyNumber, contributionCount) {
+    return `Hey @${receiver}! The Magic Story #${storyNumber} has ended and you contributed ${contributionCount} times! That makes ${amount.toFixed(3)} SBD for you. Wow! Thanks for participating!`;
+  },
   post(body, meta, storyNumber, day) {
     const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
     const permlink = 'the-magic-story-' + storyNumber + '-day-' + day + '-' + (new Date()).getTime();
@@ -229,7 +235,7 @@ module.exports = {
     });
   },
   transfer(to, amount, memo) {
-    steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, amount.toFixed(3) + ' SBD', memo, function(err, result) {
+    steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, amount.toFixed(3) + ' SBD', memo, function(err) {
       if (err) {
         console.log(err);
       }
