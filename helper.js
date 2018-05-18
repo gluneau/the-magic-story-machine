@@ -114,10 +114,12 @@ module.exports = {
         if (comment.json_metadata) {
           let command = JSON.parse(comment.json_metadata);
           if (
+            // image property seems to be removed when empty and comment edited on steemit, idk why... comment property doesn't seem to be removed
+            // we'll only check for type now
+            // command.hasOwnProperty('appendText') &&
+            // command.hasOwnProperty('image') &&
+            // command.hasOwnProperty('comment') &&
             command.hasOwnProperty('type') &&
-            command.hasOwnProperty('appendText') &&
-            command.hasOwnProperty('image') &&
-            command.hasOwnProperty('comment') &&
             this.commands.indexOf(command.type) !== -1
           ) {
             if ((command.type === 'end' && canEnd) || (command.type === 'append' && command.appendText.length < 251)) {
