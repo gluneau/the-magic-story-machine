@@ -5,17 +5,45 @@ module.exports = {
   BOT_KEY: process.env.BOT_KEY,
   BOT_TAGS: process.env.BOT_TAGS,
   commands: ['end', 'append'],
-  getPosts(limit = 100) {
-    // TODO: make this recursive to get ALL posts
-    return new Promise((resolve, reject) => {
-      steem.api.getDiscussionsByBlog({tag: this.BOT_ACCOUNT_NAME, limit: limit}, (err, posts) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(posts);
-        }
+  async getPosts() {
+    const getPosts = function (account, start_author, start_permlink) {
+      return new Promise((resolve, reject) => {
+        steem.api.getDiscussionsByBlog({
+          tag: account,
+          limit: 100,
+          start_author: start_author,
+          start_permlink: start_permlink
+        }, (err, res) => {
+          if (!err) {
+            resolve(res);
+          } else {
+            reject(err);
+          }
+        });
       });
-    });
+    };
+
+    let allPosts = [];
+    let posts;
+    let lastPost;
+    let startAuthor = null;
+    let startPermlink = null;
+
+    do {
+      posts = await getPosts(this.BOT_ACCOUNT_NAME, startAuthor, startPermlink);
+      lastPost = posts[posts.length - 1];
+      startAuthor = lastPost.author;
+      startPermlink = lastPost.permlink;
+
+      for (let i = 0; i < posts.length; i++) {
+        allPosts.push(posts[i]);
+      }
+
+      allPosts = allPosts.filter((post, index, self) => self.findIndex(p => p.permlink === post.permlink) === index)
+
+    } while (posts.length === 100);
+
+    return allPosts;
   },
   getComments(permlink) {
     return new Promise((resolve, reject) => {
