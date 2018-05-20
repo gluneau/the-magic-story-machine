@@ -1,4 +1,3 @@
-// TODO: automatic reward distribution
 // TODO: multilanguage support
 
 const helper = require('./helper');
