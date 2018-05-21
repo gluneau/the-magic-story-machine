@@ -1,4 +1,5 @@
 // TODO: multilanguage support
+// TODO: GLOBAL POT!!!!! (accross languages, monthly, yearly...)
 
 const helper = require('./helper');
 
