@@ -9,6 +9,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
 }
 
 (async () => {
+  console.log('');
+  console.log(new Date());
+
   // get all posts from bot account and all comments from latest story post
   console.log('Fetching data...');
   let account = await helper.getAccount();
