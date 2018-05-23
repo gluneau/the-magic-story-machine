@@ -3,7 +3,7 @@
 
 const helper = require('./helper');
 
-if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
+if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT_LANG) {
   console.log('You forgot to set the necessary environment variables!');
   process.exit();
 }
@@ -56,7 +56,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS) {
       account = await helper.claimRewards(account);
 
       // distribute rewards if possible
-      if (parseFloat(account.sbd_balance) >= pot) {
+      if (pot && parseFloat(account.sbd_balance) >= pot) {
         // prepare data
         const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others... lol as if you would randomly choose someone who is the only one who gets nothing... :D
         const winnerPot = (pot * splitRatio);

@@ -1,9 +1,11 @@
 const steem = require('steem');
+const locales = require('./locales');
 
 module.exports = {
   BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
   BOT_KEY: process.env.BOT_KEY,
   BOT_TAGS: process.env.BOT_TAGS,
+  BOT_LANG: process.env.BOT_LANG,
   commands: ['end', 'append'],
   async getPosts() {
     const getPosts = function (account, start_author, start_permlink) {
@@ -174,46 +176,38 @@ module.exports = {
     let storyBody = '';
     commands.forEach(command => {
       if (command.appendText && command.image) {
-        storyBody += command.appendText + '\n\n' + command.image + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n';
+        storyBody += command.appendText + '\n\n' + command.image + '\n' + '<sup>' + locales.getAttribution(this.BOT_LANG, command.author) + '</sup>\n\n';
       } else if (command.appendText) {
-        storyBody += command.appendText + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n';
+        storyBody += command.appendText + '\n' + '<sup>' + locales.getAttribution(this.BOT_LANG, command.author) + '</sup>\n\n';
       } else if (command.image) {
-        storyBody += command.image + '\n' + '<sup>(by @' + command.author + ')</sup>\n\n';
+        storyBody += command.image + '\n' + '<sup>' + locales.getAttribution(this.BOT_LANG, command.author) + '</sup>\n\n';
       }
     });
     return storyBody;
   },
   getPostIntro(pot) {
     pot = pot.toFixed(2);
-    return `<center>
-![avatar.png](https://steemitimages.com/DQmeK9D1q35gERzGWfQBD9MKGzuU5wjDNSM1q561dbGxdmL/avatar.png)
-</center>
-
-### <center>It's me again...<br>The Magic Frog</center>
-## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
-##
-
-<center>The Pot full of Gold:<br>[**$ ${pot}**](http://the-magic-frog.com)<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
+    return locales.getIntro(this.BOT_LANG).replace('{{pot}}', pot);
   },
   getPostFooter() {
-    return `
-
-<hr>
-
-### <center><sup>To participate visit:</sup><br>[the-magic-frog.com](http://the-magic-frog.com)</center>
-###
-
-<center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>`;
+    return locales.getFooter(this.BOT_LANG);
   },
   getWinnerTransferMemo(receiver, amount, storyNumber) {
-    return `Congratulations @${receiver}! The Magic Story #${storyNumber} has ended and you won half of the pot! That\'s ${amount.toFixed(3)} SBD. Wow! Thanks for participating!`;
+    return locales.getWinnerTransferMemo(this.BOT_LANG)
+      .replace('{{receiver}}', receiver)
+      .replace('{{amount}}', amount.toFixed(3))
+      .replace('{{storyNumber}}', storyNumber);
   },
   getLoserTransferMemo(receiver, amount, storyNumber, contributionCount) {
-    return `Hey @${receiver}! The Magic Story #${storyNumber} has ended and you contributed ${contributionCount} times! That makes ${amount.toFixed(3)} SBD for you. Wow! Thanks for participating!`;
+    return locales.getLoserTransferMemo(this.BOT_LANG)
+      .replace('{{receiver}}', receiver)
+      .replace('{{amount}}', amount.toFixed(3))
+      .replace('{{contributionCount}}', contributionCount)
+      .replace('{{storyNumber}}', storyNumber);
   },
   post(body, meta, storyNumber, day) {
-    const title = 'The Magic Story: #' + storyNumber + ' Day ' + day;
-    const permlink = 'the-magic-story-' + storyNumber + '-day-' + day + '-' + (new Date()).getTime();
+    const title = locales.getPostTitle(this.BOT_LANG).replace('{{storyNumber}}', storyNumber).replace('{{day}}', day);
+    const permlink = locales.getPostPermlink(this.BOT_LANG).replace('{{storyNumber}}', storyNumber).replace('{{day}}', day);
 
     meta.storyNumber = storyNumber;
     meta.day = day;
