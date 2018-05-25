@@ -1,5 +1,20 @@
 const steem = require('steem');
 const locales = require('./locales');
+const EventEmitter = require('events')
+
+const voting_queue = [];
+const FIVE_SECONDS = 5000
+const TEN_MINUTES = 600000
+const THIRTY_MINUTES = 1800000
+
+const voting = {
+    length: () => { return voting_queue.length },
+    push: (obj) => { return voting_queue.push(obj) },
+    pop: () => { return voting_queue.pop() },
+    shift: () => { return voting_queue.shift() },
+    unshift: (obj) => { return voting_queue.unshift(obj) }
+}
+
 
 module.exports = {
   BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
@@ -232,35 +247,14 @@ module.exports = {
         });
 
         // vote
-        steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, this.BOT_ACCOUNT_NAME, permlink, 10000);
+        this.upvote({ author: this.BOT_ACCOUNT_NAME, permlink: permlink }, 10000)
       } else {
         console.log(err);
       }
     });
   },
   upvote(comment, weight) {
-    steem.api.getActiveVotes(comment.author, comment.permlink, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        // check if already voted
-        let voted = false;
-        result.forEach((vote) => {
-          if (vote.voter === this.BOT_ACCOUNT_NAME && vote.percent > 0) {
-            voted = true;
-          }
-        });
-
-        // vote
-        if (!voted) {
-          steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
-            if (err) {
-              console.log(err);
-            }
-          });
-        }
-      }
-    });
+    voting_queue.push({ comment: comment, weight: weight, key: this.BOT_KEY, bot_account_name: this.BOT_ACCOUNT_NAME})
   },
   transfer(to, amount, memo) {
     steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, amount.toFixed(3) + ' SBD', memo, function(err) {
@@ -270,3 +264,36 @@ module.exports = {
     });
   }
 };
+
+setInterval(() => {
+  const options = voting_queue.shift()
+  if (options) {
+    real_upvote(options)
+        .catch((err) => {
+          // If there's an error, just push it back on the stack and retry it
+          // Really, we want to just do this if it's because it was inside
+          // the voting threshold. TODO: There should be a check to verify first
+          voting_queue.push(options)
+        })
+  }
+}, FIVE_SECONDS)
+
+
+function real_upvote(options) {
+  const {comment, weight, key, bot_account_name } = options
+  return steem.api.getActiveVotesAsync(comment.author, comment.permlink)
+    .filter((vote) => vote.voter === bot_account_name && vote.percent > 0)
+    .then((votes) => {
+      if (votes.length > 0) { // Already voted?
+        return votes
+      }
+
+      return steem.broadcast.voteAsync(key, bot_account_name, comment.author, comment.permlink, weight)
+          .then((results) => {
+            // Handle results
+          })
+          .catch((error) => {
+            // Handle voting error
+          })
+    })
+}
