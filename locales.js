@@ -1,3 +1,5 @@
+// TODO: add discord link to footer
+
 module.exports = {
   getIntro(lang) {
     switch (lang) {
