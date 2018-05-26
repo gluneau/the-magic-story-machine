@@ -229,29 +229,59 @@ module.exports = {
     meta.tags = this.BOT_TAGS.split(',').map(tag => tag.trim());
     meta.app = 'the-magic-story-machine/0.1';
 
-    steem.broadcast.comment(this.BOT_KEY, '', meta.tags[0], this.BOT_ACCOUNT_NAME, permlink, title, body, meta, (err) => {
-      if (!err) {
-        // set beneficiaries
-        const extensions = [[0, {
-          beneficiaries: [
-            {
-              account: 'mkt',
-              weight: 500
-            }
-          ]
-        }]];
-        steem.broadcast.commentOptions(this.BOT_KEY, this.BOT_ACCOUNT_NAME, permlink, '1000000.000 SBD', 5000, true, true, extensions, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+    const extensions = [[0, {
+      beneficiaries: [
+        {
+          account: 'mkt',
+          weight: 500
+        }
+      ]
+    }]];
+    const keys = {
+      posting: this.BOT_ACCOUNT_NAME
+    }
+    const operations = [
+      ['comment',
+        {
+          parent_author: '', 
+          parent_permlink: meta.tags[0], 
+          author: this.BOT_ACCOUNT_NAME, 
+          permlink: permlink, 
+          title: title, 
+          body: body, 
+          json_metadata: meta 
+        }
+      ],
+      [
+        'comment_options',
+        {
+          author: this.BOT_ACCOUNT_NAME, 
+          permlink: permlink, 
+          max_accepted_payout: '1000000.000 SBD', 
+          percent_steem_dollars: 5000, 
+          allow_votes: true, 
+          allow_curation: true, 
+          extensions: extensions
+        }
+      ],
+      [
+        'vote',
+        {
+          voter: this.BOT_ACCOUNT_NAME,
+          author: this.BOT_ACCOUNT_NAME,
+          permlink: permlink,
+          weight: 10000
+        }
+      ]
+    ]
 
-        // vote
-        this.upvote({ author: this.BOT_ACCOUNT_NAME, permlink: permlink }, 10000)
-      } else {
-        console.log(err);
-      }
-    });
+    return steem.broadcast.sendAsync({
+      extensions: [],
+      operations: operations,
+    }, keys)
+      .catch((err) => {
+        // Handle exception here
+      })
   },
   upvote(comment, weight) {
     voting_queue.push({ comment: comment, weight: weight, key: this.BOT_KEY, bot_account_name: this.BOT_ACCOUNT_NAME})
