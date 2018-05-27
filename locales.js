@@ -69,11 +69,11 @@ module.exports = {
   getWinnerTransferMemo(lang) {
     switch (lang) {
       case 'en':
-        return `Congratulations @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you won half of the pot! That\'s {{amount.toFixed(3)}} SBD. Wow! Thanks for participating!`;
+        return `Congratulations @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you won half of the pot! That\'s {{amount}} SBD. Wow! Thanks for participating!`;
       case 'de':
         return `Herzlichen Glückwunsch @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast den ganzen halben Pot gewonnen! Das macht {{amount}} SBD. Wow! Danke für deine Teilnahme!`;
       case 'fr':
-        return `Félicitations @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez gagné la moitié du pot! Cela représente {{amount.toFixed(3)}} SBD. Hou la la! Merci d'avoir participé!`;
+        return `Félicitations @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez gagné la moitié du pot! Cela représente {{amount}} SBD. Hou la la! Merci d'avoir participé!`;
     }
   },
   getLoserTransferMemo() {
