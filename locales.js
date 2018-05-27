@@ -115,5 +115,32 @@ module.exports = {
       case 'fr':
         return '(par @' + author + ')';
     }
+  },
+  getBeneficiaries(lang) {
+    switch (lang) {
+      case 'en':
+      case 'de':
+        return [[0, {
+          beneficiaries: [
+            {
+              account: 'mkt',
+              weight: 500
+            }
+          ]
+        }]];
+      case 'fr':
+        return [[0, {
+          beneficiaries: [
+            {
+              account: 'mkt',
+              weight: 100
+            },
+            {
+              account: 'helo',
+              weight: 400
+            }
+          ]
+        }]];
+    }
   }
 }

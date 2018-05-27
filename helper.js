@@ -219,14 +219,7 @@ module.exports = {
     steem.broadcast.comment(this.BOT_KEY, '', meta.tags[0], this.BOT_ACCOUNT_NAME, permlink, title, body, meta, (err) => {
       if (!err) {
         // set beneficiaries
-        const extensions = [[0, {
-          beneficiaries: [
-            {
-              account: 'mkt',
-              weight: 500
-            }
-          ]
-        }]];
+        const extensions = locales.getBeneficiaries(this.BOT_LANG);
         steem.broadcast.commentOptions(this.BOT_KEY, this.BOT_ACCOUNT_NAME, permlink, '1000000.000 SBD', 5000, true, true, extensions, (err) => {
           if (err) {
             console.log(err);
