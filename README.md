@@ -13,13 +13,16 @@ cd the-magic-story-machine
 npm i
 ```
 
-You also need to export two environment variables:
+You also need to export environment variables:
 
 ```
 export BOT_ACCOUNT_NAME=account-name
 export BOT_KEY=PostingKey
 export BOT_TAGS=themagicfrog,writing,story,funny
+export BOT_LANG=en
 ```
+
+Put them in `.env` file and source it (`source .env`) before running scripts.
 
 The bot needs one initial post that you have to set up manually. This post must contain the following `json_metadata`:
 
