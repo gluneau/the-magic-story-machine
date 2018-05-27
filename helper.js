@@ -38,7 +38,9 @@ module.exports = {
       startPermlink = lastPost.permlink;
 
       for (let i = 0; i < posts.length; i++) {
-        allPosts.push(posts[i]);
+        if (posts[i].author === this.BOT_ACCOUNT_NAME) {
+          allPosts.push(posts[i]);
+        }
       }
 
       allPosts = allPosts.filter((post, index, self) => self.findIndex(p => p.permlink === post.permlink) === index)
