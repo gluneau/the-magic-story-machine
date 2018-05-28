@@ -1,20 +1,8 @@
 const steem = require('steem');
 const locales = require('./locales');
-const EventEmitter = require('events')
 
 const voting_queue = [];
 const FIVE_SECONDS = 5000
-const TEN_MINUTES = 600000
-const THIRTY_MINUTES = 1800000
-
-const voting = {
-    length: () => { return voting_queue.length },
-    push: (obj) => { return voting_queue.push(obj) },
-    pop: () => { return voting_queue.pop() },
-    shift: () => { return voting_queue.shift() },
-    unshift: (obj) => { return voting_queue.unshift(obj) }
-}
-
 
 module.exports = {
   BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
@@ -244,7 +232,7 @@ module.exports = {
           permlink: permlink, 
           title: title, 
           body: body, 
-          json_metadata: meta 
+          json_metadata: JSON.stringify(meta)
         }
       ],
       [
@@ -255,7 +243,7 @@ module.exports = {
           max_accepted_payout: '1000000.000 SBD', 
           percent_steem_dollars: 5000, 
           allow_votes: true, 
-          allow_curation: true, 
+          allow_curation_rewards: true, 
           extensions: extensions
         }
       ],
