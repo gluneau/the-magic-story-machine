@@ -1,20 +1,8 @@
 const steem = require('steem');
 const locales = require('./locales');
-const EventEmitter = require('events')
 
 const voting_queue = [];
-const FIVE_SECONDS = 5000
-const TEN_MINUTES = 600000
-const THIRTY_MINUTES = 1800000
-
-const voting = {
-    length: () => { return voting_queue.length },
-    push: (obj) => { return voting_queue.push(obj) },
-    pop: () => { return voting_queue.pop() },
-    shift: () => { return voting_queue.shift() },
-    unshift: (obj) => { return voting_queue.unshift(obj) }
-}
-
+const FIVE_SECONDS = 5000;
 
 module.exports = {
   BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
