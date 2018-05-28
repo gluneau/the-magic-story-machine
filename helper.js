@@ -224,7 +224,8 @@ module.exports = {
       posting: this.BOT_KEY
     }
     const operations = [
-      ['comment',
+      [
+        'comment',
         {
           parent_author: '', 
           parent_permlink: meta.tags[0], 
@@ -263,7 +264,7 @@ module.exports = {
       operations: operations,
     }, keys)
       .catch((err) => {
-        // Handle exception here
+        console.log(err);
       })
   },
   upvote(comment, weight) {
