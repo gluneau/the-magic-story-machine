@@ -53,7 +53,9 @@ module.exports = {
       startPermlink = lastPost.permlink;
 
       for (let i = 0; i < posts.length; i++) {
-        allPosts.push(posts[i]);
+        if (posts[i].author === this.BOT_ACCOUNT_NAME) {
+          allPosts.push(posts[i]);
+        }
       }
 
       allPosts = allPosts.filter((post, index, self) => self.findIndex(p => p.permlink === post.permlink) === index)
@@ -119,7 +121,7 @@ module.exports = {
     return posts.filter(post => {
       let meta = JSON.parse(post.json_metadata);
 
-      return meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber')
+      return post.author === this.BOT_ACCOUNT_NAME && meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber')
     });
   },
   getCurrentStoryPosts(allStoryPosts, storyNumber) {
@@ -229,16 +231,9 @@ module.exports = {
     meta.tags = this.BOT_TAGS.split(',').map(tag => tag.trim());
     meta.app = 'the-magic-story-machine/0.1';
 
-    const extensions = [[0, {
-      beneficiaries: [
-        {
-          account: 'mkt',
-          weight: 500
-        }
-      ]
-    }]];
+    const extensions = locales.getBeneficiaries(this.BOT_LANG);
     const keys = {
-      posting: this.BOT_ACCOUNT_NAME
+      posting: this.BOT_KEY
     }
     const operations = [
       ['comment',
