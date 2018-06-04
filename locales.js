@@ -29,7 +29,7 @@ module.exports = {
 </center>
 
 ### <center>C'est encore moi...<br>La grenouille magique</center>
-## <center>[Lis mon histoire](https://steemit.com/introduceyourself/@grenouille/voici-la-machine-a-histoire-magique-aidez-la-grenouille-pas-si-magique-et-gagnez-un-pot-plein-dor-narration-collective)</center>
+## <center>[Lis mon histoire](https://steemit.com/introduceyourself/@grenouille/voici-la-mysterieuse-machine-a-histoire-aidez-la-grenouille-pas-si-magique-et-gagnez-un-pot-plein-d-or-narration-collective)</center>
 ##
 
 <center>Le Pot plein d'Or:<br>[**$ {{pot}}**](https://fr.the-magic-frog.com)<br><sup>(Jetez votre sort en votant sur cet article pour élever le pot!)</sup></center>`;
@@ -103,7 +103,7 @@ module.exports = {
       case 'de':
         return 'die-magische-geschichte-{{storyNumber}}-tag-{{day}}-' + (new Date()).getTime();
       case 'fr':
-        return 'l-histoire-magique-{{storyNumber}}-jour-{{day}}-' + (new Date()).getTime();
+        return 'histoire-magique-{{storyNumber}}-jour-{{day}}-' + (new Date()).getTime();
     }
   },
   getAttribution(lang, author) {
