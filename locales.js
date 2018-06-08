@@ -93,7 +93,7 @@ module.exports = {
       case 'de':
         return 'Die Magische Geschichte #{{storyNumber}} Tag {{day}}';
       case 'fr':
-        return 'L\'histoire magique #{{storyNumber}} jour {{day}}';
+        return 'Histoire Magique #{{storyNumber}} Jour {{day}}';
     }
   },
   getPostPermlink(lang) {
