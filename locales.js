@@ -78,7 +78,7 @@ module.exports = {
 <hr>
 
 # <center>ATTENTION!!!</center>
-### <center>Please do not edit your comments on any other platform than [the-magic-frog.com](https://the-magic-frog.com)! Editing it elsewhere will have no effect! In addition to that, we just discovered a very annoying bug on busy.org that completely invalidates your submission after editing!</center>`;
+### <center>Veuillez ne pas modifier vos soumissions sur une autre plateforme que sur [fr.the-magic-frog.com](https://fr.the-magic-frog.com)! L'éditer ailleurs n'aura pas l'effet désiré! En plus de cela, nous venons de découvrir un bug très ennuyeux sur busy.org qui invalide complètement votre soumission après l'édition.</center>`;
     }
   },
   getWinnerTransferMemo(lang) {
