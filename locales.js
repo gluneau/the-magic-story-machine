@@ -64,7 +64,7 @@ module.exports = {
 <hr>
 
 # <center>ACHTUNG!!!</center>
-### <center>Bitte bearbeitet eure Einreichungen ausschließlich auf [the-magic-frog.com](https://the-magic-frog.com)! Auf jeder anderen Platform hat das bearbeiten des Kommentars keinen Effekt! Außerdem haben wir soeben einen sehr nervigen Bug auf busy.org entdeckt, der eure Einreichung nach dem Bearbeiten komplett ungültig macht!</center>`;
+### <center>Bitte bearbeitet eure Einreichungen ausschließlich auf [the-magic-frog.com](https://the-magic-frog.com)! Auf jeder anderen Platform hat das Bearbeiten des Kommentars keinen Effekt! Außerdem haben wir soeben einen sehr nervigen Bug auf busy.org entdeckt, der eure Einreichung nach dem Bearbeiten komplett ungültig macht!</center>`;
       case 'fr':
         return `
 
