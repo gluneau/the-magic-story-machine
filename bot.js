@@ -59,12 +59,13 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       // distribute rewards if possible
       if (pot && parseFloat(account.sbd_balance) >= pot) {
         // prepare data
+        const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm');
         const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others... lol as if you would randomly choose someone who is the only one who gets nothing... :D
         const winnerPot = (pot * splitRatio);
-        const luckyNumber = Math.floor(Math.random() * lastPostMeta.commands.length);
-        const winnerCommand = lastPostMeta.commands[luckyNumber];
+        const luckyNumber = Math.floor(Math.random() * rewardableCommands.length);
+        const winnerCommand = rewardableCommands[luckyNumber];
         const loserPot = (pot * (1 - splitRatio));
-        const loserCommands = lastPostMeta.commands.filter(command => {
+        const loserCommands = rewardableCommands.filter(command => {
           return command.author !== winnerCommand.author;
         });
         const singleUserPot = loserPot / loserCommands.length;
