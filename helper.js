@@ -1,4 +1,5 @@
 const steem = require('steem');
+const axios = require('axios');
 const locales = require('./locales');
 
 const voting_queue = [];
@@ -73,6 +74,15 @@ module.exports = {
         }
       });
     });
+  },
+  getDelegators() {
+    return new Promise((resolve, reject) => {
+      axios.get('https://api.the-magic-frog.com/delegators?account=' + this.BOT_ACCOUNT_NAME).then(response => {
+        resolve(response.data);
+      }).catch(err => {
+        reject(err);
+      });
+    })
   },
   claimRewards(account) {
     return new Promise((resolve, reject) => {
@@ -208,6 +218,13 @@ module.exports = {
       .replace('{{receiver}}', receiver)
       .replace('{{amount}}', amount.toFixed(3))
       .replace('{{contributionCount}}', contributionCount)
+      .replace('{{storyNumber}}', storyNumber);
+  },
+  getDelegatorTransferMemo(receiver, amount, storyNumber, sp) {
+    return locales.getDelegatorTransferMemo(this.BOT_LANG)
+      .replace('{{receiver}}', receiver)
+      .replace('{{amount}}', amount.toFixed(3))
+      .replace('{{sp}}', sp.toFixed(3))
       .replace('{{storyNumber}}', storyNumber);
   },
   post(body, meta, storyNumber, day) {

@@ -91,7 +91,7 @@ module.exports = {
         return `Félicitations @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez gagné la moitié du pot! Cela représente {{amount}} SBD. Hou la la! Merci d'avoir participé!`;
     }
   },
-  getLoserTransferMemo() {
+  getLoserTransferMemo(lang) {
     switch (lang) {
       case 'en':
         return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you contributed {{contributionCount}} times! That makes {{amount}} SBD for you. Wow! Thanks for participating!`;
@@ -99,6 +99,16 @@ module.exports = {
         return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast es {{contributionCount}} mal in die Geschichte geschafft! Das macht {{amount}} SBD für dich. Wow! Danke für deine Teilnahme!`;
       case 'fr':
         return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez contribué {{contributionCount}} fois! Cela représente {{amount}} SBD pour vous. Hou la la! Merci d'avoir participé!`;
+    }
+  },
+  getDelegatorTransferMemo(lang) {
+    switch (lang) {
+      case 'en':
+        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you delegated {{sp}} SP to @the-magic-frog! That makes {{amount}} SBD for you. Wow! Thanks for the support`;
+      case 'de':
+        return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast {{sp}} SP an @der-zauberfrosch delegiert! Das macht {{amount}} SBD für dich. Wow! Danke für den Support!`;
+      case 'fr':
+        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez contribué {{sp}} fois! Cela représente {{amount}} SBD pour vous. Hou la la! Merci d'avoir participé!`;
     }
   },
   getPostTitle(lang) {
