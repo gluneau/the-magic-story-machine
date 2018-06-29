@@ -108,7 +108,7 @@ module.exports = {
       case 'de':
         return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast {{sp}} SP an @der-zauberfrosch delegiert! Das macht {{amount}} SBD für dich. Wow! Danke für den Support!`;
       case 'fr':
-        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez contribué {{sp}} fois! Cela représente {{amount}} SBD pour vous. Hou la la! Merci d'avoir participé!`;
+        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!`;
     }
   },
   getPostTitle(lang) {
