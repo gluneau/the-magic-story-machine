@@ -227,6 +227,9 @@ module.exports = {
       .replace('{{sp}}', sp.toFixed(3))
       .replace('{{storyNumber}}', storyNumber);
   },
+  getEndPhrase() {
+    return locales.getEndPhrase(this.BOT_LANG);
+  },
   post(body, meta, storyNumber, day) {
     const title = locales.getPostTitle(this.BOT_LANG).replace('{{storyNumber}}', storyNumber).replace('{{day}}', day);
     const permlink = locales.getPostPermlink(this.BOT_LANG).replace('{{storyNumber}}', storyNumber).replace('{{day}}', day);

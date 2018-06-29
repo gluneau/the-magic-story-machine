@@ -141,6 +141,16 @@ module.exports = {
         return '(par @' + author + ')';
     }
   },
+  getEndPhrase(lang) {
+    switch (lang) {
+      case 'en':
+        return 'The End!';
+      case 'de':
+        return 'Ende!';
+      case 'fr':
+        return 'La fin!';
+    }
+  },
   getBeneficiaries(lang) {
     switch (lang) {
       case 'en':
