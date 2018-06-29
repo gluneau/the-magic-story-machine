@@ -186,7 +186,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       // get the first/winning comment (removing it from the array) and vote at 100%
       let winningComment = validComments.shift();
       setTimeout(() => {
-        console.log('Upvoting @' + winningComment.author + '/' + winningComment.permlink + ' (Weight: 100%)');
+        console.log('Upvoting winner: @' + winningComment.author + '/' + winningComment.permlink + ' (Weight: 100%)');
         helper.upvote(winningComment, 10000);
       }, 5000);
 
@@ -195,7 +195,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         let weight = Math.min(((16 / validComments.length) / 2 * 100), 100).toFixed(2) * 100;
         validComments.forEach((comment, i) => {
           setTimeout(() => {
-            console.log('Upvoting @' + comment.author + '/' + comment.permlink + ' (' + weight / 100 + ' %)');
+            console.log('Upvoting: @' + comment.author + '/' + comment.permlink + ' (Weight: ' + weight / 100 + ' %)');
             helper.upvote(comment, weight);
           }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on the winning comment (which itself is 5s after the vote on the story post)
         });
