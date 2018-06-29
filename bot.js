@@ -72,7 +72,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
       // distribute rewards if possible
       if (pot && parseFloat(account.sbd_balance) >= pot) {
-        console.log('Story has ended. Distributing rewards.');
+        console.log('Distributing rewards.');
         console.log('Aaaaand the winner is: ' + winnerCommand.author);
 
         // transfer winner pot
