@@ -82,12 +82,19 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         }
 
         // count contributions for each participant
-        let loserTransfers = {};
+        let loserTransfers = [];
         loserCommands.forEach(loserCommand => {
-          if (transfers.hasOwnProperty(loserCommand.author)) {
-            loserTransfers[loserCommand.author]++;
+          let existingIndex = loserTransfers.findIndex((transfer) => {
+            return transfer.author === loserCommand.author;
+          });
+
+          if (existingIndex) {
+            loserTransfers[existingIndex].contributions++;
           } else {
-            loserTransfers[loserCommand.author] = 1;
+            loserTransfers.push({
+              author: loserCommand.author,
+              contributions: 1
+            });
           }
         });
 
