@@ -153,7 +153,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         // publish last story post
         console.log('Story will end. Publishing last post...');
         helper.post(
-          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n' + helper.getEndPhrase() + '\n\n' + footer,
+          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n### ' + helper.getEndPhrase() + '\n\n' + footer,
           lastPostMeta,
           lastPostMeta.storyNumber,
           lastPostMeta.day + 1
