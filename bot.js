@@ -60,7 +60,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   });
   const singleLoserPot = loserPot / loserCommands.length;
 
-  if (posts.length && comments.length && account) {
+  if (posts.length && account) {
     console.log('Found ' + currentStoryPosts.length + ' posts in current story.');
     console.log('Found ' + validComments.length + ' valid commands for latest story post.');
     console.log('Most upvoted command: ' + JSON.stringify(command));
