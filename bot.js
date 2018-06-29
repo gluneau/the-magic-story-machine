@@ -1,4 +1,3 @@
-// TODO: multilanguage support
 // TODO: GLOBAL POT!!!!! (accross languages, monthly, yearly...)
 // TODO: INIT SCIPT!!! (Frogs all over the world! Set meta data on initial account post)
 
