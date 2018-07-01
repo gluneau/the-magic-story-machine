@@ -88,7 +88,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
             return transfer.author === loserCommand.author;
           });
 
-          if (existingIndex) {
+          if (existingIndex !== -1) {
             loserTransfers[existingIndex].contributions++;
           } else {
             loserTransfers.push({
@@ -100,11 +100,11 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
         // transfer loser splitpot
         console.log('Storyteller Rewards:');
-        loserTransfers.forEach((contributionCount, author) => {
-          let amount = contributionCount * singleLoserPot;
+        loserTransfers.forEach(transfer => {
+          let amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
-            console.log('Transferring ' + amount.toFixed(3) + ' SBD to ' + author + '...');
-            helper.transfer(author, amount, helper.getLoserTransferMemo(author, amount, lastPostMeta.storyNumber, contributionCount));
+            console.log('Transferring ' + amount.toFixed(3) + ' SBD to ' + transfer.author + '...');
+            helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions));
           }
         });
 
