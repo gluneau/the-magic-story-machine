@@ -3,6 +3,9 @@
 
 const helper = require('./helper');
 
+// Allow self signed certs for dev
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT_LANG) {
   console.log('You forgot to set the necessary environment variables!');
   process.exit();
