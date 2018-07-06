@@ -1,8 +1,7 @@
 // TODO: GLOBAL POT!!!!! (accross languages, monthly, yearly...)
-// TODO: INIT SCIPT!!! (Frogs all over the world! Set meta data on initial account post)
+// TODO: INIT SCRIPT!!! (Frogs all over the world! Set meta data on initial account post)
 
 const helper = require('./helper');
-const prod = false; // true of false is it running for production?
 
 if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT_LANG) {
   console.log('You forgot to set the necessary environment variables!');
@@ -79,7 +78,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         // transfer winner pot
         if (winnerPot >= 0.001) {
           console.log('Transferring ' + winnerPot.toFixed(3) + ' SBD to ' + winnerCommand.author + '...');
-          if (prod) { 
+          if (helper.BOT_PROD) { 
             helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(winnerCommand.author, winnerPot, lastPostMeta.storyNumber));
           }
         }
@@ -107,7 +106,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           let amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
             console.log('@' + transfer.author + ' | ' + transfer.contributions  + ' | ' +  ((transfer.contributions/loserCommands.length)*100) + ' | ' + transfer.amount.toFixed(3));
-            if (prod) {
+            if (helper.BOT_PROD) {
               helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions));
             }
           }
@@ -137,7 +136,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
               console.log('@' + transfer.delegator + ' | ' + transfer.sp  + ' | ' +  transfer.percentage + ' | ' + transfer.amount.toFixed(3));
-              if (prod) {
+              if (helper.BOT_PROD) {
                 helper.transfer(transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp));
               }
             }
@@ -151,7 +150,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       // start new story
       console.log('Story has ended. Starting a new one...');
       lastPostMeta.commands = [];
-      if (prod) {
+      if (helper.BOT_PROD) {
         helper.post(
           intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
           lastPostMeta,
@@ -168,7 +167,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       if (command.type === 'end') {
         // publish last story post
         console.log('Story will end. Publishing last post...');
-        if (prod) {
+        if (helper.BOT_PROD) {
           helper.post(
             intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n### ' + helper.getEndPhrase() + '\n\n' + footer,
             lastPostMeta,
@@ -179,7 +178,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       } else if (command.type === 'append') {
         // publish next story post
         console.log('Story goes on. Publishing next post...');
-        if (prod) {
+        if (helper.BOT_PROD) {
           helper.post(
             intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n## ' + lastPostMeta.toBeContinued + footer,
             lastPostMeta,
@@ -207,7 +206,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       let winningComment = validComments.shift();
       setTimeout(() => {
         console.log('Upvoting winner: @' + winningComment.author + '/' + winningComment.permlink + ' (Weight: 100%)');
-        if (prod) {
+        if (helper.BOT_PROD) {
           helper.upvote(winningComment, 10000);
         }
       }, 5000);
@@ -218,7 +217,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         validComments.forEach((comment, i) => {
           setTimeout(() => {
             console.log('Upvoting: @' + comment.author + '/' + comment.permlink + ' (Weight: ' + weight / 100 + ' %)');
-            if (prod) {
+            if (helper.BOT_PROD) {
               helper.upvote(comment, weight);
             }
           }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on the winning comment (which itself is 5s after the vote on the story post)

@@ -20,6 +20,7 @@ export BOT_ACCOUNT_NAME=account-name
 export BOT_KEY=PostingKey
 export BOT_TAGS=themagicfrog,writing,story,funny
 export BOT_LANG=en
+export BOT_PROD=false
 ```
 
 Put them in `.env` file and source it (`source .env`) before running scripts.
