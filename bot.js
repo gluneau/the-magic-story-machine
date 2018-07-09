@@ -136,19 +136,18 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           });
         }
 
+        // start new story
+        console.log('Story has ended. Starting a new one...');
+        lastPostMeta.commands = [];
+        helper.post(
+          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
+          lastPostMeta,
+          lastPostMeta.storyNumber + 1,
+          1
+        );
       } else {
         console.log('Master! There is not enough gold to distribute all the rewards!');
       }
-
-      // start new story
-      console.log('Story has ended. Starting a new one...');
-      lastPostMeta.commands = [];
-      helper.post(
-        intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
-        lastPostMeta,
-        lastPostMeta.storyNumber + 1,
-        1
-      );
     } else if (command) {
       // continue story
       lastPostMeta.commands.push(command);
