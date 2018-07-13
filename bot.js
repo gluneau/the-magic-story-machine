@@ -44,8 +44,6 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   const pot = helper.getPotValue(currentStoryPosts);
   const validComments = helper.getAllValidComments(comments, lastPostMeta.day > 10);
   const command = helper.getMostUpvotedCommand(validComments);
-  const intro = helper.getPostIntro(pot);
-  const footer = helper.getPostFooter();
 
   // prepare reward distribution data
   const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm'); // exclude guest account
@@ -168,6 +166,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         }
 
         // start new story
+        const intro = helper.getPostIntro(0);
+        const footer = helper.getPostFooter();
+
         console.log('Story has ended. Starting a new one...');
         lastPostMeta.commands = [];
         helper.post(
@@ -182,6 +183,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
     } else if (command) {
       // continue story
       lastPostMeta.commands.push(command);
+
+      const intro = helper.getPostIntro(pot);
+      const footer = helper.getPostFooter();
 
       let storyBody = helper.buildStoryBody(lastPostMeta.commands);
 
