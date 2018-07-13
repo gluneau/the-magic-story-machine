@@ -111,7 +111,7 @@ module.exports = {
         return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!`;
     }
   },
-  getDelegatorTransferMemo(lang) {
+  getCuratorTransferMemo(lang) {
     switch (lang) {
       case 'en':
         return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and with your upvotes you added {{sbd}} SBD to the pot! In return you get {{amount}} SBD back. Wow! Thanks for the support!`;
