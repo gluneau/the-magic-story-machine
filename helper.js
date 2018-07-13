@@ -86,7 +86,7 @@ module.exports = {
   },
   getCurators() {
     return new Promise((resolve, reject) => {
-      axios.get('https://api.the-magic-frog.com/curators?account=' + this.BOT_ACCOUNT_NAME).then(response => {
+      axios.get('https://api.the-magic-frog.com/curators?top=100&account=' + this.BOT_ACCOUNT_NAME).then(response => {
         resolve(response.data);
       }).catch(err => {
         reject(err);
