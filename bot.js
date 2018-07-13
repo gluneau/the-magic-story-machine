@@ -12,9 +12,11 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   console.log('');
   console.log(new Date());
 
-  // get delegators, all posts from bot account and all comments from latest story post
+  // get data from blockchain
   console.log('Fetching data...');
+  let rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
   let delegators = await helper.getDelegators();
+  let curators = await helper.getCurators();
   let account = await helper.getAccount();
   let posts = await helper.getPosts();
   let comments = [];
@@ -47,8 +49,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
   // prepare reward distribution data
   const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm'); // exclude guest account
-  const delegatorPot = pot * 0.2;
-  const storytellerPot = pot * 0.8;
+  const delegatorPot = pot * 0.25;
+  const curatorPot = pot * 0.25;
+  const storytellerPot = pot * 0.5;
   const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others... lol as if you would randomly choose someone who is the only one who gets nothing... :D
   const winnerPot = (storytellerPot * splitRatio);
   const luckyNumber = Math.floor(Math.random() * rewardableCommands.length);
@@ -132,6 +135,34 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
             if (transfer.amount >= 0.001) {
               console.log('Transferring ' + transfer.amount.toFixed(3) + ' SBD to ' + transfer.delegator + '...');
               helper.transfer(transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp));
+            }
+          });
+        }
+
+        // count total curation
+        let totalCuration = 0;
+        curators.forEach(curator => {
+          totalCuration += curator.rshares;
+        });
+
+        // if there are curators, calculate their rewards
+        if (totalCuration) {
+          let curatorTransfers = [];
+          curators.forEach(curator => {
+            let percentage = curator.rshares / totalCuration * 100;
+            curatorTransfers.push({
+              curator: curator.voter,
+              amount: curatorPot * percentage / 100,
+              sbd: curator.rshares * rsharesToSBDFactor
+            });
+          });
+
+          // transfer curator splitpot
+          console.log('Curator Rewards:');
+          curatorTransfers.forEach((transfer) => {
+            if (transfer.amount >= 0.001) {
+              console.log('Transferring ' + transfer.amount.toFixed(3) + ' SBD to ' + transfer.curator + '...');
+              helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd));
             }
           });
         }
