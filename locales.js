@@ -118,7 +118,7 @@ module.exports = {
       case 'de':
         return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast mit deinen Upvotes {{sbd}} SBD zum Pot beigesteuert! Dafür bekommst du nun {{amount}} SBD für zurück. Wow! Danke für den Support!`;
       case 'fr':
-        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and with your upvotes you added {{sbd}} SBD to the pot! In return you get {{amount}} SBD back. Wow! Thanks for the support!`;
+        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vos votes ont contribués {{sbd}} SBD au pot! Et en retour vous receverez {{amount}} SBD. Hou la la! Merci pour votre support!`;
     }
   },
   getPostTitle(lang) {
