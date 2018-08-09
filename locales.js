@@ -104,11 +104,21 @@ module.exports = {
   getDelegatorTransferMemo(lang) {
     switch (lang) {
       case 'en':
-        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you delegated {{sp}} SP to @the-magic-frog! That makes {{amount}} SBD for you. Wow! Thanks for the support`;
+        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you delegated {{sp}} SP to @the-magic-frog! That makes {{amount}} SBD for you. Wow! Thanks for the support!`;
       case 'de':
         return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast {{sp}} SP an @der-zauberfrosch delegiert! Das macht {{amount}} SBD für dich. Wow! Danke für den Support!`;
       case 'fr':
         return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!`;
+    }
+  },
+  getCuratorTransferMemo(lang) {
+    switch (lang) {
+      case 'en':
+        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and with your upvotes you added {{sbd}} SBD to the pot! In return you get {{amount}} SBD back. Wow! Thanks for the support!`;
+      case 'de':
+        return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast mit deinen Upvotes {{sbd}} SBD zum Pot beigesteuert! Dafür bekommst du nun {{amount}} SBD für zurück. Wow! Danke für den Support!`;
+      case 'fr':
+        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vos votes ont contribués {{sbd}} SBD au pot! Et en retour vous receverez {{amount}} SBD. Hou la la! Merci pour votre support!`;
     }
   },
   getPostTitle(lang) {

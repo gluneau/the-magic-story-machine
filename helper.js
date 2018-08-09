@@ -85,6 +85,15 @@ module.exports = {
       });
     })
   },
+  getCurators() {
+    return new Promise((resolve, reject) => {
+      axios.get('https://api.the-magic-frog.com/curators?top=100&account=' + this.BOT_ACCOUNT_NAME).then(response => {
+        resolve(response.data);
+      }).catch(err => {
+        reject(err);
+      });
+    })
+  },
   claimRewards(account) {
     return new Promise((resolve, reject) => {
       if (
@@ -227,6 +236,36 @@ module.exports = {
       .replace('{{amount}}', amount.toFixed(3))
       .replace('{{sp}}', sp.toFixed(3))
       .replace('{{storyNumber}}', storyNumber);
+  },
+  getCuratorTransferMemo(receiver, amount, storyNumber, sbd) {
+    return locales.getCuratorTransferMemo(this.BOT_LANG)
+      .replace('{{receiver}}', receiver)
+      .replace('{{amount}}', amount.toFixed(3))
+      .replace('{{sbd}}', sbd.toFixed(3))
+      .replace('{{storyNumber}}', storyNumber);
+  },
+  getRsharesToSBDFactor() {
+    return new Promise((resolve, reject) => {
+      // get reward fund for posts
+      steem.api.getRewardFund('post', (err, fund) => {
+        if (err) reject(err);
+        else {
+          const rewardBalance = parseFloat(fund.reward_balance.replace(' STEEM', ''));
+          const recentClaims = parseInt(fund.recent_claims);
+
+          // get SBD price factor
+          steem.api.getCurrentMedianHistoryPrice((err, price) => {
+            if (err) reject(err);
+            else {
+              const SBDPrice = parseFloat(price.base.replace(' SBD', ''));
+
+              // calculate SBD value for each vote
+              resolve(rewardBalance / recentClaims * SBDPrice);
+            }
+          });
+        }
+      });
+    });
   },
   getEndPhrase() {
     return locales.getEndPhrase(this.BOT_LANG);
