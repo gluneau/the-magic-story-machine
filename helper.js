@@ -1,3 +1,4 @@
+require('dotenv').config()
 const steem = require('steem');
 const axios = require('axios');
 const locales = require('./locales');

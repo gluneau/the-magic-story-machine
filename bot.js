@@ -81,7 +81,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         // transfer winner pot
         if (winnerPot >= 0.001) {
           console.log('Transferring ' + winnerPot.toFixed(3) + ' SBD to ' + winnerCommand.author + '...');
-          if (helper.BOT_PROD) { 
+          if (helper.BOT_PROD) {
             helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(winnerCommand.author, winnerPot, lastPostMeta.storyNumber));
           }
         }
