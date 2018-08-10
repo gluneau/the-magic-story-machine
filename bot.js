@@ -19,7 +19,6 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   console.log('Fetching data...');
   let rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
   let delegators = await helper.getDelegators();
-  let curators = await helper.getCurators();
   let account = await helper.getAccount();
   let posts = await helper.getPosts();
   let comments = [];
@@ -48,6 +47,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   const validComments = helper.getAllValidComments(comments, lastPostMeta.day > 10);
   const command = helper.getMostUpvotedCommand(validComments);
 
+  // Get curators with the story number
+  let curators = await helper.getCurators(lastPostMeta.storyNumber);
+
   // prepare reward distribution data
   const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm'); // exclude guest account
   const delegatorPot = pot * 0.25;
@@ -72,7 +74,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
     if (storyHasEnded) {
       // claim rewards and update account
       console.log('Claiming Rewards...');
-      account = await helper.claimRewards(account);
+      if (helper.BOT_PROD) {
+        account = await helper.claimRewards(account);
+      }
 
       // distribute rewards if possible
       if (pot && parseFloat(account.sbd_balance) >= pot) {
@@ -104,12 +108,16 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           }
         });
 
+        loserTransfers.sort((a, b) => {
+          return b.contributions - a.contributions;
+        });
+
         // transfer loser splitpot
-        console.log('Storyteller Rewards:');
+        console.log('\nStoryteller Rewards:');
         loserTransfers.forEach(transfer => {
           let amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
-            console.log('@' + transfer.author + ' | ' + transfer.contributions  + ' | ' +  ((transfer.contributions/loserCommands.length)*100) + ' | ' + transfer.amount.toFixed(3));
+            console.log('@' + transfer.author + ' | ' + transfer.contributions + ' | ' +  ((transfer.contributions/loserCommands.length)*100).toFixed(2) + '% | ' + amount.toFixed(3) + ' SBD');
             if (helper.BOT_PROD) {
               helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions));
             }
@@ -136,10 +144,10 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           });
 
           // transfer delegator splitpot
-          console.log('Delegator Rewards:');
+          console.log('\nDelegator Rewards:');
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log('@' + transfer.delegator + ' | ' + transfer.sp  + ' | ' +  transfer.percentage + ' | ' + transfer.amount.toFixed(3));
+              console.log('@' + transfer.delegator + ' | ' + transfer.sp.toFixed(0)  + ' | ' +  transfer.percentage.toFixed(2) + '% | ' + transfer.amount.toFixed(3) + ' SBD');
               if (helper.BOT_PROD) {
                 helper.transfer(transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp));
               }
@@ -160,17 +168,20 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
             let percentage = curator.rshares / totalCuration * 100;
             curatorTransfers.push({
               curator: curator.voter,
+              percentage: percentage,
               amount: curatorPot * percentage / 100,
               sbd: curator.rshares * rsharesToSBDFactor
             });
           });
 
           // transfer curator splitpot
-          console.log('Curator Rewards:');
+          console.log('\nCurator Rewards:');
           curatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log('Transferring ' + transfer.amount.toFixed(3) + ' SBD to ' + transfer.curator + '...');
-              helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd));
+              console.log('@' + transfer.curator + ' | ' +  transfer.percentage.toFixed(2) + '% | ' + transfer.amount.toFixed(3) + ' SBD');
+              if (helper.BOT_PROD) {
+                helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd));
+              }
             }
           });
         }
@@ -181,12 +192,14 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
         console.log('Story has ended. Starting a new one...');
         lastPostMeta.commands = [];
-        helper.post(
-          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
-          lastPostMeta,
-          lastPostMeta.storyNumber + 1,
-          1
-        );
+        if (helper.BOT_PROD) {
+          helper.post(
+            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
+            lastPostMeta,
+            lastPostMeta.storyNumber + 1,
+            1
+          );
+        }
       } else {
         console.log('Master! There is not enough gold to distribute all the rewards!');
       }

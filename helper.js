@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const steem = require('steem');
 const axios = require('axios');
 const locales = require('./locales');
@@ -85,9 +85,9 @@ module.exports = {
       });
     })
   },
-  getCurators() {
+  getCurators(storyNumber) {
     return new Promise((resolve, reject) => {
-      axios.get('https://api.the-magic-frog.com/curators?top=100&account=' + this.BOT_ACCOUNT_NAME).then(response => {
+      axios.get('https://api.the-magic-frog.com/curators?top=100&storyNumber=' + storyNumber + '&account=' + this.BOT_ACCOUNT_NAME).then(response => {
         resolve(response.data);
       }).catch(err => {
         reject(err);
