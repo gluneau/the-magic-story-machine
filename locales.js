@@ -4,6 +4,7 @@ module.exports = {
   getIntro(lang) {
     switch (lang) {
       case 'en':
+      default:
         return `<center>
 ![avatar.png](https://steemitimages.com/DQmeK9D1q35gERzGWfQBD9MKGzuU5wjDNSM1q561dbGxdmL/avatar.png)
 </center>
@@ -38,6 +39,7 @@ module.exports = {
   getFooter(lang) {
     switch (lang) {
       case 'en':
+      default:
         return `
 
 <hr>
@@ -84,46 +86,51 @@ module.exports = {
   getWinnerTransferMemo(lang) {
     switch (lang) {
       case 'en':
-        return `Congratulations @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you won half of the pot! That\'s {{amount}} SBD. Wow! Thanks for participating!`;
+      default:
+        return 'Congratulations @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you won half of the pot! That\'s {{amount}} SBD. Wow! Thanks for participating!';
       case 'de':
-        return `Herzlichen Glückwunsch @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast den ganzen halben Pot gewonnen! Das macht {{amount}} SBD. Wow! Danke für deine Teilnahme!`;
+        return 'Herzlichen Glückwunsch @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast den ganzen halben Pot gewonnen! Das macht {{amount}} SBD. Wow! Danke für deine Teilnahme!';
       case 'fr':
-        return `Félicitations @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez gagné la moitié du pot! Cela représente {{amount}} SBD. Hou la la! Merci d'avoir participé!`;
+        return 'Félicitations @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vous avez gagné la moitié du pot! Cela représente {{amount}} SBD. Hou la la! Merci d\'avoir participé!';
     }
   },
   getLoserTransferMemo(lang) {
     switch (lang) {
       case 'en':
-        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you contributed {{contributionCount}} times! That makes {{amount}} SBD for you. Wow! Thanks for participating!`;
+      default:
+        return 'Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you contributed {{contributionCount}} times! That makes {{amount}} SBD for you. Wow! Thanks for participating!';
       case 'de':
-        return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast es {{contributionCount}} mal in die Geschichte geschafft! Das macht {{amount}} SBD für dich. Wow! Danke für deine Teilnahme!`;
+        return 'Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast es {{contributionCount}} mal in die Geschichte geschafft! Das macht {{amount}} SBD für dich. Wow! Danke für deine Teilnahme!';
       case 'fr':
-        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez contribué {{contributionCount}} fois! Cela représente {{amount}} SBD pour vous. Hou la la! Merci d'avoir participé!`;
+        return 'Allô @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vous avez contribué {{contributionCount}} fois! Cela représente {{amount}} SBD pour vous. Hou la la! Merci d\'avoir participé!';
     }
   },
   getDelegatorTransferMemo(lang) {
     switch (lang) {
       case 'en':
-        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you delegated {{sp}} SP to @the-magic-frog! That makes {{amount}} SBD for you. Wow! Thanks for the support!`;
+      default:
+        return 'Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and you delegated {{sp}} SP to @the-magic-frog! That makes {{amount}} SBD for you. Wow! Thanks for the support!';
       case 'de':
-        return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast {{sp}} SP an @der-zauberfrosch delegiert! Das macht {{amount}} SBD für dich. Wow! Danke für den Support!`;
+        return 'Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast {{sp}} SP an @der-zauberfrosch delegiert! Das macht {{amount}} SBD für dich. Wow! Danke für den Support!';
       case 'fr':
-        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!`;
+        return 'Allô @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!';
     }
   },
   getCuratorTransferMemo(lang) {
     switch (lang) {
       case 'en':
-        return `Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and with your upvotes you added {{sbd}} SBD to the pot! In return you get {{amount}} SBD back. Wow! Thanks for the support!`;
+      default:
+        return 'Hey @{{receiver}}! The Magic Story #{{storyNumber}} has ended and with your upvotes you added {{sbd}} SBD to the pot! In return you get {{amount}} SBD back. Wow! Thanks for the support!';
       case 'de':
-        return `Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast mit deinen Upvotes {{sbd}} SBD zum Pot beigesteuert! Dafür bekommst du nun {{amount}} SBD für zurück. Wow! Danke für den Support!`;
+        return 'Hey @{{receiver}}! Die Magische Geschichte #{{storyNumber}} ist zu ende und du hast mit deinen Upvotes {{sbd}} SBD zum Pot beigesteuert! Dafür bekommst du nun {{amount}} SBD für zurück. Wow! Danke für den Support!';
       case 'fr':
-        return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vos votes ont contribués {{sbd}} SBD au pot! Et en retour vous receverez {{amount}} SBD. Hou la la! Merci pour votre support!`;
+        return 'Allô @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vos votes ont contribués {{sbd}} SBD au pot! Et en retour vous receverez {{amount}} SBD. Hou la la! Merci pour votre support!';
     }
   },
   getPostTitle(lang) {
     switch (lang) {
       case 'en':
+      default:
         return 'The Magic Story #{{storyNumber}} Day {{day}}';
       case 'de':
         return 'Die Magische Geschichte #{{storyNumber}} Tag {{day}}';
@@ -134,26 +141,29 @@ module.exports = {
   getPostPermlink(lang) {
     switch (lang) {
       case 'en':
-        return 'the-magic-story-{{storyNumber}}-day-{{day}}-' + (new Date()).getTime();
+      default:
+        return `the-magic-story-{{storyNumber}}-day-{{day}}-${(new Date()).getTime()}`;
       case 'de':
-        return 'die-magische-geschichte-{{storyNumber}}-tag-{{day}}-' + (new Date()).getTime();
+        return `die-magische-geschichte-{{storyNumber}}-tag-{{day}}-${(new Date()).getTime()}`;
       case 'fr':
-        return 'histoire-magique-{{storyNumber}}-jour-{{day}}-' + (new Date()).getTime();
+        return `histoire-magique-{{storyNumber}}-jour-{{day}}-${(new Date()).getTime()}`;
     }
   },
   getAttribution(lang, author) {
     switch (lang) {
       case 'en':
-        return '(by @' + author + ')';
+      default:
+        return `(by @${author})`;
       case 'de':
-        return '(von @' + author + ')';
+        return `(von @${author})`;
       case 'fr':
-        return '(par @' + author + ')';
+        return `(par @${author})`;
     }
   },
   getEndPhrase(lang) {
     switch (lang) {
       case 'en':
+      default:
         return 'The End!';
       case 'de':
         return 'Ende!';
@@ -165,27 +175,28 @@ module.exports = {
     switch (lang) {
       case 'en':
       case 'de':
+      default:
         return [[0, {
           beneficiaries: [
             {
               account: 'mkt',
-              weight: 500
-            }
-          ]
+              weight: 500,
+            },
+          ],
         }]];
       case 'fr':
         return [[0, {
           beneficiaries: [
             {
               account: 'mkt',
-              weight: 100
+              weight: 100,
             },
             {
               account: 'helo',
-              weight: 400
-            }
-          ]
+              weight: 400,
+            },
+          ],
         }]];
     }
-  }
-}
+  },
+};

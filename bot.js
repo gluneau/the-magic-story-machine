@@ -4,9 +4,9 @@
 const helper = require('./helper');
 
 // Allow self signed certs for dev
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT_LANG) {
+if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT_LANG) {
   console.log('You forgot to set the necessary environment variables!');
   process.exit();
 }
@@ -17,22 +17,22 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
   // get data from blockchain
   console.log('Fetching data...');
-  let rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
-  let delegators = await helper.getDelegators();
+  const rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
+  const delegators = await helper.getDelegators();
   let account = await helper.getAccount();
-  let posts = await helper.getPosts();
+  const posts = await helper.getPosts();
   let comments = [];
-  for (let i = 0; i < posts.length; i++) {
-    let meta = JSON.parse(posts[i].json_metadata);
+  for (let i = 0; i < posts.length; i += 1) {
+    const meta = JSON.parse(posts[i].json_metadata);
     if (
-      meta.hasOwnProperty('day') &&
-      meta.hasOwnProperty('storyNumber') &&
-      meta.hasOwnProperty('commands') &&
-      meta.hasOwnProperty('startPhrase') &&
-      meta.hasOwnProperty('toBeContinued')
+      Object.prototype.hasOwnProperty.call(meta, 'day')
+      && Object.prototype.hasOwnProperty.call(meta, 'storyNumber')
+      && Object.prototype.hasOwnProperty.call(meta, 'commands')
+      && Object.prototype.hasOwnProperty.call(meta, 'startPhrase')
+      && Object.prototype.hasOwnProperty.call(meta, 'toBeContinued')
     ) {
       comments = await helper.getComments(posts[i].permlink);
-      console.log('Found ' + posts.length + ' posts and ' + comments.length + ' comments for latest post.');
+      console.log(`Found ${posts.length} posts and ${comments.length} comments for latest post.`);
       break;
     }
   }
@@ -48,28 +48,29 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   const command = helper.getMostUpvotedCommand(validComments);
 
   // Get curators with the story number
-  let curators = await helper.getCurators(lastPostMeta.storyNumber);
+  const curators = await helper.getCurators(lastPostMeta.storyNumber);
 
   // prepare reward distribution data
   const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm'); // exclude guest account
   const delegatorPot = pot * 0.25;
   const curatorPot = pot * 0.25;
   const storytellerPot = pot * 0.5;
-  const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others... lol as if you would randomly choose someone who is the only one who gets nothing... :D
+  const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others...
+  // lol as if you would randomly choose someone who is the only one who gets nothing... :D
   const winnerPot = (storytellerPot * splitRatio);
   const luckyNumber = Math.floor(Math.random() * rewardableCommands.length);
   const winnerCommand = rewardableCommands[luckyNumber];
   const loserPot = (storytellerPot * (1 - splitRatio));
-  const loserCommands = rewardableCommands.filter(command => {
-    return command.author !== winnerCommand.author;
-  });
+  const loserCommands = rewardableCommands.filter(
+    command => command.author !== winnerCommand.author,
+  );
   const singleLoserPot = loserPot / loserCommands.length;
 
   if (posts.length && account) {
-    console.log('Found ' + currentStoryPosts.length + ' posts in current story.');
-    console.log('Found ' + validComments.length + ' valid commands for latest story post.');
-    console.log('Most upvoted command: ' + JSON.stringify(command));
-    console.log('Pot value: ' + pot);
+    console.log(`Found ${currentStoryPosts.length} posts in current story.`);
+    console.log(`Found ${validComments.length} valid commands for latest story post.`);
+    console.log(`Most upvoted command: ${JSON.stringify(command)}`);
+    console.log(`Pot value: ${pot}`);
 
     if (storyHasEnded) {
       // claim rewards and update account
@@ -81,65 +82,67 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       // distribute rewards if possible
       if (pot && parseFloat(account.sbd_balance) >= pot) {
         console.log('Distributing rewards.');
-        console.log('Aaaaand the winner is: ' + winnerCommand.author);
+        console.log(`Aaaaand the winner is: ${winnerCommand.author}`);
 
         // transfer winner pot
         if (winnerPot >= 0.001) {
-          console.log('Transferring ' + winnerPot.toFixed(3) + ' SBD to ' + winnerCommand.author + '...');
+          console.log(`Transferring ${winnerPot.toFixed(3)} SBD to ${winnerCommand.author}...`);
           if (helper.BOT_PROD) {
-            helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(winnerCommand.author, winnerPot, lastPostMeta.storyNumber));
+            helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(
+              winnerCommand.author, winnerPot, lastPostMeta.storyNumber,
+            ));
           }
         }
 
         // count contributions for each participant
-        let loserTransfers = [];
-        loserCommands.forEach(loserCommand => {
-          let existingIndex = loserTransfers.findIndex((transfer) => {
-            return transfer.author === loserCommand.author;
-          });
+        const loserTransfers = [];
+        loserCommands.forEach((loserCommand) => {
+          const existingIndex = loserTransfers.findIndex(
+            transfer => transfer.author === loserCommand.author,
+          );
 
           if (existingIndex !== -1) {
-            loserTransfers[existingIndex].contributions++;
+            loserTransfers[existingIndex].contributions += 1;
           } else {
             loserTransfers.push({
               author: loserCommand.author,
-              contributions: 1
+              contributions: 1,
             });
           }
         });
 
-        loserTransfers.sort((a, b) => {
-          return b.contributions - a.contributions;
-        });
+        loserTransfers.sort((a, b) => b.contributions - a.contributions);
 
         // transfer loser splitpot
         console.log('\nStoryteller Rewards:');
-        loserTransfers.forEach(transfer => {
-          let amount = transfer.contributions * singleLoserPot;
+        loserTransfers.forEach((transfer) => {
+          const amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
-            console.log('@' + transfer.author + ' | ' + transfer.contributions + ' | ' +  ((transfer.contributions/loserCommands.length)*100).toFixed(2) + '% | ' + amount.toFixed(3) + ' SBD');
+            console.log(`@${transfer.author} | ${transfer.contributions} | ${((transfer.contributions / loserCommands.length) * 100).toFixed(2)}% | ${amount.toFixed(3)} SBD`);
             if (helper.BOT_PROD) {
-              helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions));
+              helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(
+                transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions,
+              ));
             }
           }
         });
 
         // count total delegation
         let totalDelegation = 0;
-        delegators.forEach(delegator => {
+        delegators.forEach((delegator) => {
           totalDelegation += delegator.sp;
         });
 
         // if there are delegators, calculate their rewards
         if (totalDelegation) {
-          let delegatorTransfers = [];
-          delegators.forEach(delegator => {
-            let percentage = delegator.sp / totalDelegation * 100;
+          const delegatorTransfers = [];
+          delegators.forEach((delegator) => {
+            const percentage = delegator.sp / totalDelegation * 100;
             delegatorTransfers.push({
               delegator: delegator.delegator,
-              percentage: percentage,
+              percentage,
               amount: delegatorPot * percentage / 100,
-              sp: delegator.sp
+              sp: delegator.sp,
             });
           });
 
@@ -147,9 +150,13 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           console.log('\nDelegator Rewards:');
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log('@' + transfer.delegator + ' | ' + transfer.sp.toFixed(0)  + ' | ' +  transfer.percentage.toFixed(2) + '% | ' + transfer.amount.toFixed(3) + ' SBD');
+              console.log(`@${transfer.delegator} | ${transfer.sp.toFixed(0)} | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
               if (helper.BOT_PROD) {
-                helper.transfer(transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp));
+                helper.transfer(
+                  transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(
+                    transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp,
+                  ),
+                );
               }
             }
           });
@@ -157,20 +164,20 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
         // count total curation
         let totalCuration = 0;
-        curators.forEach(curator => {
+        curators.forEach((curator) => {
           totalCuration += curator.rshares;
         });
 
         // if there are curators, calculate their rewards
         if (totalCuration) {
-          let curatorTransfers = [];
-          curators.forEach(curator => {
-            let percentage = curator.rshares / totalCuration * 100;
+          const curatorTransfers = [];
+          curators.forEach((curator) => {
+            const percentage = curator.rshares / totalCuration * 100;
             curatorTransfers.push({
               curator: curator.voter,
-              percentage: percentage,
+              percentage,
               amount: curatorPot * percentage / 100,
-              sbd: curator.rshares * rsharesToSBDFactor
+              sbd: curator.rshares * rsharesToSBDFactor,
             });
           });
 
@@ -178,9 +185,11 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           console.log('\nCurator Rewards:');
           curatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log('@' + transfer.curator + ' | ' +  transfer.percentage.toFixed(2) + '% | ' + transfer.amount.toFixed(3) + ' SBD');
+              console.log(`@${transfer.curator} | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
               if (helper.BOT_PROD) {
-                helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd));
+                helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(
+                  transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd,
+                ));
               }
             }
           });
@@ -194,10 +203,10 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         lastPostMeta.commands = [];
         if (helper.BOT_PROD) {
           helper.post(
-            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
+            `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n## ${lastPostMeta.toBeContinued}\n\n${footer}`,
             lastPostMeta,
             lastPostMeta.storyNumber + 1,
-            1
+            1,
           );
         }
       } else {
@@ -210,17 +219,17 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       const intro = helper.getPostIntro(pot);
       const footer = helper.getPostFooter();
 
-      let storyBody = helper.buildStoryBody(lastPostMeta.commands);
+      const storyBody = helper.buildStoryBody(lastPostMeta.commands);
 
       if (command.type === 'end') {
         // publish last story post
         console.log('Story will end. Publishing last post...');
         if (helper.BOT_PROD) {
           helper.post(
-            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n### ' + helper.getEndPhrase() + '\n\n' + footer,
+            `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n${storyBody} \n\n### ${helper.getEndPhrase()}\n\n${footer}`,
             lastPostMeta,
             lastPostMeta.storyNumber,
-            lastPostMeta.day + 1
+            lastPostMeta.day + 1,
           );
         }
       } else if (command.type === 'append') {
@@ -228,10 +237,10 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         console.log('Story goes on. Publishing next post...');
         if (helper.BOT_PROD) {
           helper.post(
-            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n## ' + lastPostMeta.toBeContinued + footer,
+            `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n${storyBody} \n\n## ${lastPostMeta.toBeContinued}${footer}`,
             lastPostMeta,
             lastPostMeta.storyNumber,
-            lastPostMeta.day + 1
+            lastPostMeta.day + 1,
           );
         }
       }
@@ -239,21 +248,24 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
     // upvote comments
     if (validComments.length) {
-      console.log('Upvoting ' + validComments.length + ' comments:');
+      console.log(`Upvoting ${validComments.length} comments:`);
 
       // calculate voting weights:
-      // - we assume that we start at 100% voting power every day and we don't want to go below 80% to be fully recovered the next day
+      // - we assume that we start at 100% voting power every day
+      // - and we don't want to go below 80% to be fully recovered the next day
       // - the post that just got published already got a 100% vote, so we are at 98% now
-      // - the winner comment will also get a 100% vote, leaving us at 96% voting power (roughly, actually a bit more)
-      // - if there are more comments (hopefully :D) then we have 16% voting power left until we went down to 80%
+      // - the winner comment will also get a 100% vote, leaving us at 96% voting power
+      // - (roughly, actually a bit more)
+      // - if there are more comments (hopefully :D) then we have 16% voting power left
+      // - until we went down to 80%
       // - those 16% will then be distributed across all remaining comments
       // - if there are not that many comments, they will also receive a 100% vote
       // - (use timeouts to make sure we don't get a "don't be hasty" error from steem)
 
       // get the first/winning comment (removing it from the array) and vote at 100%
-      let winningComment = validComments.shift();
+      const winningComment = validComments.shift();
       setTimeout(() => {
-        console.log('Upvoting winner: @' + winningComment.author + '/' + winningComment.permlink + ' (Weight: 100%)');
+        console.log(`Upvoting winner: @${winningComment.author}/${winningComment.permlink} (Weight: 100%)`);
         if (helper.BOT_PROD) {
           helper.upvote(winningComment, 10000);
         }
@@ -261,14 +273,15 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
       // if there are comments left... do some math and then vote
       if (validComments.length) {
-        let weight = Math.min(((16 / validComments.length) / 2 * 100), 100).toFixed(2) * 100;
+        const weight = Math.min(((16 / validComments.length) / 2 * 100), 100).toFixed(2) * 100;
         validComments.forEach((comment, i) => {
           setTimeout(() => {
-            console.log('Upvoting: @' + comment.author + '/' + comment.permlink + ' (Weight: ' + weight / 100 + ' %)');
+            console.log(`Upvoting: @${comment.author}/${comment.permlink} (Weight: ${weight / 100} %)`);
             if (helper.BOT_PROD) {
               helper.upvote(comment, weight);
             }
-          }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on the winning comment (which itself is 5s after the vote on the story post)
+          }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on
+          // the winning comment (which itself is 5s after the vote on the story post)
         });
       }
     }

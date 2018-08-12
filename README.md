@@ -34,3 +34,5 @@ The bot needs one initial post that you have to set up manually. This post must 
   toBeContinued: 'To be continued!'
 }
 ```
+
+You can lint the code by running `npm run lint`
