@@ -4,7 +4,8 @@
   "description": "",
   "main": "bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "./node_modules/.bin/eslint --fix ."
   },
   "author": "",
   "license": "ISC",
@@ -17,8 +18,5 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0"
-  },
-  "scripts": {
-    "lint": "./node_modules/.bin/eslint --fix ."
   }
 }
