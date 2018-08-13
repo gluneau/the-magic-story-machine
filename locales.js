@@ -34,7 +34,7 @@ module.exports = {
 ### <center>Sou eu novamente...<br>O Sapo Mágico</center>
 ## <center>[Leia minha história](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
 ##
-<center>O pote cheio de ouro:<br>[**$ {{pot}}**](https://the-magic-frog.com)<br><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
+<center>O pote cheio de ouro:<br>[**$ {{pot}}**](https://pt.the-magic-frog.com)<br><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
     }
   },
   getFooter(lang) {
@@ -69,12 +69,12 @@ module.exports = {
 	case 'pt':
         return `
 <hr>
-### <center><sup>Para participar visite:</sup><br>[the-magic-frog.com](https://the-magic-frog.com)</center>
+### <center><sup>Para participar visite:</sup><br>[pt.the-magic-frog.com](https://pt.the-magic-frog.com)</center>
 ###
 <center><sup>Se você quiser apoiar este projeto, sinta-se à vontade para **upvote** e **resteem** este post e ** siga @the-magic-frog ** mas o mais importante... **participe!**</sup></center>
 <hr>
 # <center>ATENÇÃO!!!</center>
-### <center>Por favor, não edite seus envios em qualquer outra plataforma [the-magic-frog.com](https://the-magic-frog.com)! Editá-lo em outro lugar não terá efeito! Além disso, acabamos de descobrir um bug muito chato no busy.org que invalida completamente o seu envio após a edição!</center>`;
+### <center>Por favor, não edite seus envios em qualquer outra plataforma [pt.the-magic-frog.com](https://pt.the-magic-frog.com)! Editá-lo em outro lugar não terá efeito! Além disso, acabamos de descobrir um bug muito chato no busy.org que invalida completamente o seu envio após a edição!</center>`;
 
     }
   },
@@ -112,7 +112,7 @@ module.exports = {
       case 'fr':
         return `Allô @{{receiver}}! L'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!`;
       case 'pt':
-        return `Hey @{{receiver}}! A Estória mágica #{{storyNumber}} terminou e você delegou {{sp}} SP para @the-magic-frog! Isto rendeu  {{amount}} SBD para você. Wow! Obrigado por participar!`;
+        return `Hey @{{receiver}}! A Estória mágica #{{storyNumber}} terminou e você delegou {{sp}} SP para @sapo-magico! Isto rendeu  {{amount}} SBD para você. Wow! Obrigado por participar!`;
        
   }
   },
