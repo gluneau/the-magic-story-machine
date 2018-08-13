@@ -1,7 +1,10 @@
 // TODO: GLOBAL POT!!!!! (accross languages, monthly, yearly...)
-// TODO: INIT SCIPT!!! (Frogs all over the world! Set meta data on initial account post)
+// TODO: INIT SCRIPT!!! (Frogs all over the world! Set meta data on initial account post)
 
 const helper = require('./helper');
+
+// Allow self signed certs for dev
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT_LANG) {
   console.log('You forgot to set the necessary environment variables!');
@@ -16,7 +19,6 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   console.log('Fetching data...');
   let rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
   let delegators = await helper.getDelegators();
-  let curators = await helper.getCurators();
   let account = await helper.getAccount();
   let posts = await helper.getPosts();
   let comments = [];
@@ -45,6 +47,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
   const validComments = helper.getAllValidComments(comments, lastPostMeta.day > 10);
   const command = helper.getMostUpvotedCommand(validComments);
 
+  // Get curators with the story number
+  let curators = await helper.getCurators(lastPostMeta.storyNumber);
+
   // prepare reward distribution data
   const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm'); // exclude guest account
   const delegatorPot = pot * 0.25;
@@ -69,7 +74,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
     if (storyHasEnded) {
       // claim rewards and update account
       console.log('Claiming Rewards...');
-      account = await helper.claimRewards(account);
+      if (helper.BOT_PROD) {
+        account = await helper.claimRewards(account);
+      }
 
       // distribute rewards if possible
       if (pot && parseFloat(account.sbd_balance) >= pot) {
@@ -79,7 +86,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         // transfer winner pot
         if (winnerPot >= 0.001) {
           console.log('Transferring ' + winnerPot.toFixed(3) + ' SBD to ' + winnerCommand.author + '...');
-          helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(winnerCommand.author, winnerPot, lastPostMeta.storyNumber));
+          if (helper.BOT_PROD) {
+            helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(winnerCommand.author, winnerPot, lastPostMeta.storyNumber));
+          }
         }
 
         // count contributions for each participant
@@ -99,13 +108,19 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           }
         });
 
+        loserTransfers.sort((a, b) => {
+          return b.contributions - a.contributions;
+        });
+
         // transfer loser splitpot
-        console.log('Storyteller Rewards:');
+        console.log('\nStoryteller Rewards:');
         loserTransfers.forEach(transfer => {
           let amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
-            console.log('Transferring ' + amount.toFixed(3) + ' SBD to ' + transfer.author + '...');
-            helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions));
+            console.log('@' + transfer.author + ' | ' + transfer.contributions + ' | ' +  ((transfer.contributions/loserCommands.length)*100).toFixed(2) + '% | ' + amount.toFixed(3) + ' SBD');
+            if (helper.BOT_PROD) {
+              helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions));
+            }
           }
         });
 
@@ -122,17 +137,20 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
             let percentage = delegator.sp / totalDelegation * 100;
             delegatorTransfers.push({
               delegator: delegator.delegator,
+              percentage: percentage,
               amount: delegatorPot * percentage / 100,
               sp: delegator.sp
             });
           });
 
           // transfer delegator splitpot
-          console.log('Delegator Rewards:');
+          console.log('\nDelegator Rewards:');
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log('Transferring ' + transfer.amount.toFixed(3) + ' SBD to ' + transfer.delegator + '...');
-              helper.transfer(transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp));
+              console.log('@' + transfer.delegator + ' | ' + transfer.sp.toFixed(0)  + ' | ' +  transfer.percentage.toFixed(2) + '% | ' + transfer.amount.toFixed(3) + ' SBD');
+              if (helper.BOT_PROD) {
+                helper.transfer(transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp));
+              }
             }
           });
         }
@@ -150,17 +168,20 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
             let percentage = curator.rshares / totalCuration * 100;
             curatorTransfers.push({
               curator: curator.voter,
+              percentage: percentage,
               amount: curatorPot * percentage / 100,
               sbd: curator.rshares * rsharesToSBDFactor
             });
           });
 
           // transfer curator splitpot
-          console.log('Curator Rewards:');
+          console.log('\nCurator Rewards:');
           curatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log('Transferring ' + transfer.amount.toFixed(3) + ' SBD to ' + transfer.curator + '...');
-              helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd));
+              console.log('@' + transfer.curator + ' | ' +  transfer.percentage.toFixed(2) + '% | ' + transfer.amount.toFixed(3) + ' SBD');
+              if (helper.BOT_PROD) {
+                helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd));
+              }
             }
           });
         }
@@ -171,12 +192,14 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
         console.log('Story has ended. Starting a new one...');
         lastPostMeta.commands = [];
-        helper.post(
-          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
-          lastPostMeta,
-          lastPostMeta.storyNumber + 1,
-          1
-        );
+        if (helper.BOT_PROD) {
+          helper.post(
+            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n## ' + lastPostMeta.toBeContinued + '\n\n' + footer,
+            lastPostMeta,
+            lastPostMeta.storyNumber + 1,
+            1
+          );
+        }
       } else {
         console.log('Master! There is not enough gold to distribute all the rewards!');
       }
@@ -192,21 +215,25 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       if (command.type === 'end') {
         // publish last story post
         console.log('Story will end. Publishing last post...');
-        helper.post(
-          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n### ' + helper.getEndPhrase() + '\n\n' + footer,
-          lastPostMeta,
-          lastPostMeta.storyNumber,
-          lastPostMeta.day + 1
-        );
+        if (helper.BOT_PROD) {
+          helper.post(
+            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n### ' + helper.getEndPhrase() + '\n\n' + footer,
+            lastPostMeta,
+            lastPostMeta.storyNumber,
+            lastPostMeta.day + 1
+          );
+        }
       } else if (command.type === 'append') {
         // publish next story post
         console.log('Story goes on. Publishing next post...');
-        helper.post(
-          intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n## ' + lastPostMeta.toBeContinued + footer,
-          lastPostMeta,
-          lastPostMeta.storyNumber,
-          lastPostMeta.day + 1
-        );
+        if (helper.BOT_PROD) {
+          helper.post(
+            intro + '\n\n# ' + lastPostMeta.startPhrase + '\n# \n\n' + storyBody + ' \n\n## ' + lastPostMeta.toBeContinued + footer,
+            lastPostMeta,
+            lastPostMeta.storyNumber,
+            lastPostMeta.day + 1
+          );
+        }
       }
     }
 
@@ -227,7 +254,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
       let winningComment = validComments.shift();
       setTimeout(() => {
         console.log('Upvoting winner: @' + winningComment.author + '/' + winningComment.permlink + ' (Weight: 100%)');
-        helper.upvote(winningComment, 10000);
+        if (helper.BOT_PROD) {
+          helper.upvote(winningComment, 10000);
+        }
       }, 5000);
 
       // if there are comments left... do some math and then vote
@@ -236,7 +265,9 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         validComments.forEach((comment, i) => {
           setTimeout(() => {
             console.log('Upvoting: @' + comment.author + '/' + comment.permlink + ' (Weight: ' + weight / 100 + ' %)');
-            helper.upvote(comment, weight);
+            if (helper.BOT_PROD) {
+              helper.upvote(comment, weight);
+            }
           }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on the winning comment (which itself is 5s after the vote on the story post)
         });
       }
