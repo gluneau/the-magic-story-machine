@@ -44,37 +44,53 @@ module.exports = {
       default:
         return `
 <hr>
+
 ### <center><sup>To participate visit:</sup><br>[the-magic-frog.com](https://the-magic-frog.com)</center>
 ###
+
 <center><sup>If you want to support this project feel free to **upvote** and **resteem** this post and **follow @the-magic-frog** but most important... **participate!**</sup></center>
+
 <hr>
+
 # <center>ATTENTION!!!</center>
 ### <center>Please do not edit your submissions on any other platform than [the-magic-frog.com](https://the-magic-frog.com)! Editing it elsewhere will have no effect! In addition to that, we just discovered a very annoying bug on busy.org that completely invalidates your submission after editing!</center>`;
       case 'de':
         return `
 <hr>
+
 ### <center><sup>Um teilzunehmen besuche:</sup><br>[de.the-magic-frog.com](https://de.the-magic-frog.com)</center>
 ###
+
 <center><sup>Wenn du dieses Projekt unterstützen möchtest, upvote und teile diesen Post und folge natürlich [dem Zauberfrosch](https://steemit.com/@der-zauberfrosch). Das Wichtigste ist aber, dass du **teilnimmst**!</sup></center>
+
 <hr>
+
 # <center>ACHTUNG!!!</center>
 ### <center>Bitte bearbeitet eure Einreichungen ausschließlich auf [the-magic-frog.com](https://the-magic-frog.com)! Auf jeder anderen Platform hat das Bearbeiten des Kommentars keinen Effekt! Außerdem haben wir soeben einen sehr nervigen Bug auf busy.org entdeckt, der eure Einreichung nach dem Bearbeiten komplett ungültig macht!</center>`;
       case 'fr':
         return `
 <hr>
+
 ### <center><sup>Pour participer, visitez: </sup><br>[fr.the-magic-frog.com](https://fr.the-magic-frog.com)</center>
 ###
+
 <center><sup>Si vous voulez soutenir ce projet, n'hésitez pas à **voter** et **resteem** cet article et **suivez la @grenouille magique** mais le plus important est de... **participer!**</sup></center>
+
 <hr>
+
 # <center>ATTENTION!!!</center>
 ### <center>Veuillez ne pas modifier vos soumissions sur une autre plateforme que sur [fr.the-magic-frog.com](https://fr.the-magic-frog.com)! L'éditer ailleurs n'aura pas l'effet désiré! En plus de cela, nous venons de découvrir un bug très ennuyeux sur busy.org qui invalide complètement votre soumission après l'édition.</center>`;
       case 'pt':
         return `
 <hr>
+
 ### <center><sup>Para participar visite:</sup><br>[pt.the-magic-frog.com](https://pt.the-magic-frog.com)</center>
 ###
+
 <center><sup>Se você quiser apoiar este projeto, sinta-se à vontade para **upvote** e **resteem** este post e ** siga @the-magic-frog ** mas o mais importante... **participe!**</sup></center>
+
 <hr>
+
 # <center>ATENÇÃO!!!</center>
 ### <center>Por favor, não edite seus envios em qualquer outra plataforma [pt.the-magic-frog.com](https://pt.the-magic-frog.com)! Editá-lo em outro lugar não terá efeito! Além disso, acabamos de descobrir um bug muito chato no busy.org que invalida completamente o seu envio após a edição!</center>`;
     }
