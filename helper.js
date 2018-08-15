@@ -34,6 +34,7 @@ module.exports = {
   BOT_KEY: process.env.BOT_KEY,
   BOT_TAGS: process.env.BOT_TAGS,
   BOT_LANG: process.env.BOT_LANG,
+  BOT_PROD: process.env.BOT_PROD,
   commands: ['end', 'append'],
   async getPosts() {
     const getPosts = function getPosts(account, startAuthor, startPermlink) {
