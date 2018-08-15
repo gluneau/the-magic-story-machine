@@ -41,8 +41,8 @@ module.exports = {
         steem.api.getDiscussionsByBlog({
           tag: account,
           limit: 100,
-          startAuthor,
-          startPermlink,
+          start_author: startAuthor,
+          start_permlink: startPermlink,
         }, (err, res) => {
           if (!err) {
             resolve(res);
