@@ -3,32 +3,6 @@ const steem = require('steem');
 const axios = require('axios');
 const locales = require('./locales');
 
-const votingQueue = [];
-const FIVE_SECONDS = 5000;
-
-function realUpvote(options) {
-  const {
-    comment, weight, key, botAccountName,
-  } = options;
-  return steem.api.getActiveVotesAsync(comment.author, comment.permlink)
-    .filter(vote => vote.voter === botAccountName && vote.percent > 0)
-    .then((votes) => {
-      if (votes.length > 0) { // Already voted?
-        return votes;
-      }
-
-      return steem.broadcast.voteAsync(
-        key, botAccountName, comment.author, comment.permlink, weight,
-      )
-        .then((results) => {
-          // Handle results
-        })
-        .catch((error) => {
-          // Handle voting error
-        });
-    });
-}
-
 module.exports = {
   botAccountName: process.env.BOT_ACCOUNT_NAME,
   BOT_KEY: process.env.BOT_KEY,
@@ -36,6 +10,7 @@ module.exports = {
   BOT_LANG: process.env.BOT_LANG,
   BOT_PROD: process.env.BOT_PROD,
   commands: ['end', 'append'],
+  votingQueue: [],
   async getPosts() {
     const getPosts = function getPosts(account, startAuthor, startPermlink) {
       return new Promise((resolve, reject) => {
@@ -126,22 +101,24 @@ module.exports = {
         || parseFloat(account.reward_sbd_balance) > 0
         || parseFloat(account.reward_vesting_balance) > 0
       ) {
-        steem.broadcast.claimRewardBalance(
-          this.BOT_KEY, this.botAccountName, account.reward_steem_balance,
-          account.reward_sbd_balance, account.reward_vesting_balance, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              steem.api.getAccounts([this.botAccountName], (errs, users) => {
-                if (errs || users.length === 0) {
-                  reject(errs);
-                } else {
-                  resolve(users[0]);
-                }
-              });
-            }
-          },
-        );
+        if (this.BOT_PROD) {
+          steem.broadcast.claimRewardBalance(
+            this.BOT_KEY, this.botAccountName, account.reward_steem_balance,
+            account.reward_sbd_balance, account.reward_vesting_balance, (err) => {
+              if (err) {
+                reject(err);
+              } else {
+                steem.api.getAccounts([this.botAccountName], (errs, users) => {
+                  if (errs || users.length === 0) {
+                    reject(errs);
+                  } else {
+                    resolve(users[0]);
+                  }
+                });
+              }
+            },
+          );
+        }
       } else {
         steem.api.getAccounts([this.botAccountName], (err, users) => {
           if (err || users.length === 0) {
@@ -345,37 +322,42 @@ module.exports = {
       ],
     ];
 
-    return steem.broadcast.sendAsync({
-      extensions: [],
-      operations,
-    }, keys)
-      .catch((err) => {
+    if (this.BOT_PROD) {
+      return steem.broadcast.sendAsync({
+        extensions: [],
+        operations,
+      }, keys).catch((err) => {
         console.log(err);
       });
+    }
   },
-  upvote(comment, weight) {
-    votingQueue.push({
-      comment, weight, key: this.BOT_KEY, botAccountName: this.botAccountName,
-    });
+  upvote(options) {
+    const {comment, weight} = options;
+    return steem.api.getActiveVotesAsync(comment.author, comment.permlink)
+      .filter(vote => vote.voter === this.botAccountName && vote.percent > 0)
+      .then((votes) => {
+        if (votes.length > 0) { // Already voted?
+          return votes;
+        }
+
+        if (this.BOT_PROD) {
+          return steem.broadcast.voteAsync(
+            this.BOT_KEY, this.botAccountName, comment.author, comment.permlink, weight,
+          ).then((results) => {
+            // Handle results
+          }).catch((error) => {
+            // Handle voting error
+          });
+        }
+      });
   },
   transfer(to, amount, memo) {
-    steem.broadcast.transfer(this.BOT_KEY, this.botAccountName, to, `${amount.toFixed(3)} SBD`, memo, (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    if (this.BOT_PROD) {
+      steem.broadcast.transfer(this.BOT_KEY, this.botAccountName, to, `${amount.toFixed(3)} SBD`, memo, (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
   },
 };
-
-setInterval(() => {
-  const options = votingQueue.shift();
-  if (options) {
-    realUpvote(options)
-      .catch((err) => {
-        // If there's an error, just push it back on the stack and retry it
-        // Really, we want to just do this if it's because it was inside
-        // the voting threshold. TODO: There should be a check to verify first
-        votingQueue.push(options);
-      });
-  }
-}, FIVE_SECONDS);

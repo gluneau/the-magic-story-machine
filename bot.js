@@ -75,9 +75,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
     if (storyHasEnded) {
       // claim rewards and update account
       console.log('Claiming Rewards...');
-      if (helper.BOT_PROD) {
-        account = await helper.claimRewards(account);
-      }
+      account = await helper.claimRewards(account);
 
       // distribute rewards if possible
       if (pot && parseFloat(account.sbd_balance) >= pot) {
@@ -87,11 +85,9 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
         // transfer winner pot
         if (winnerPot >= 0.001) {
           console.log(`Transferring ${winnerPot.toFixed(3)} SBD to ${winnerCommand.author}...`);
-          if (helper.BOT_PROD) {
-            helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(
-              winnerCommand.author, winnerPot, lastPostMeta.storyNumber,
-            ));
-          }
+          helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(
+            winnerCommand.author, winnerPot, lastPostMeta.storyNumber,
+          ));
         }
 
         // count contributions for each participant
@@ -119,11 +115,9 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
           const amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
             console.log(`@${transfer.author} | ${transfer.contributions} | ${((transfer.contributions / loserCommands.length) * 100).toFixed(2)}% | ${amount.toFixed(3)} SBD`);
-            if (helper.BOT_PROD) {
-              helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(
-                transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions,
-              ));
-            }
+            helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(
+              transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions,
+            ));
           }
         });
 
@@ -151,13 +145,11 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
               console.log(`@${transfer.delegator} | ${transfer.sp.toFixed(0)} | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
-              if (helper.BOT_PROD) {
-                helper.transfer(
-                  transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(
-                    transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp,
-                  ),
-                );
-              }
+              helper.transfer(
+                transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(
+                  transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp,
+                ),
+              );
             }
           });
         }
@@ -186,11 +178,9 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
           curatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
               console.log(`@${transfer.curator} | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
-              if (helper.BOT_PROD) {
-                helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(
-                  transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd,
-                ));
-              }
+              helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(
+                transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd,
+              ));
             }
           });
         }
@@ -201,14 +191,12 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
         console.log('Story has ended. Starting a new one...');
         lastPostMeta.commands = [];
-        if (helper.BOT_PROD) {
-          helper.post(
-            `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n## ${lastPostMeta.toBeContinued}\n\n${footer}`,
-            lastPostMeta,
-            lastPostMeta.storyNumber + 1,
-            1,
-          );
-        }
+        helper.post(
+          `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n## ${lastPostMeta.toBeContinued}\n\n${footer}`,
+          lastPostMeta,
+          lastPostMeta.storyNumber + 1,
+          1,
+        );
       } else {
         console.log('Master! There is not enough gold to distribute all the rewards!');
       }
@@ -224,25 +212,21 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
       if (command.type === 'end') {
         // publish last story post
         console.log('Story will end. Publishing last post...');
-        if (helper.BOT_PROD) {
-          helper.post(
-            `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n${storyBody} \n\n### ${helper.getEndPhrase()}\n\n${footer}`,
-            lastPostMeta,
-            lastPostMeta.storyNumber,
-            lastPostMeta.day + 1,
-          );
-        }
+        helper.post(
+          `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n${storyBody} \n\n### ${helper.getEndPhrase()}\n\n${footer}`,
+          lastPostMeta,
+          lastPostMeta.storyNumber,
+          lastPostMeta.day + 1,
+        );
       } else if (command.type === 'append') {
         // publish next story post
         console.log('Story goes on. Publishing next post...');
-        if (helper.BOT_PROD) {
-          helper.post(
-            `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n${storyBody} \n\n## ${lastPostMeta.toBeContinued}${footer}`,
-            lastPostMeta,
-            lastPostMeta.storyNumber,
-            lastPostMeta.day + 1,
-          );
-        }
+        helper.post(
+          `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n${storyBody} \n\n## ${lastPostMeta.toBeContinued}${footer}`,
+          lastPostMeta,
+          lastPostMeta.storyNumber,
+          lastPostMeta.day + 1,
+        );
       }
     }
 
@@ -260,30 +244,35 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
       // - until we went down to 80%
       // - those 16% will then be distributed across all remaining comments
       // - if there are not that many comments, they will also receive a 100% vote
-      // - (use timeouts to make sure we don't get a "don't be hasty" error from steem)
 
       // get the first/winning comment (removing it from the array) and vote at 100%
       const winningComment = validComments.shift();
-      setTimeout(() => {
-        console.log(`Upvoting winner: @${winningComment.author}/${winningComment.permlink} (Weight: 100%)`);
-        if (helper.BOT_PROD) {
-          helper.upvote(winningComment, 10000);
-        }
-      }, 5000);
+      console.log(`Upvoting winner: @${winningComment.author}/${winningComment.permlink} (Weight: 100%)`);
+      helper.votingQueue.push({comment: winningComment, weight: 10000});
 
       // if there are comments left... do some math and then vote
       if (validComments.length) {
         const weight = Math.min(((16 / validComments.length) / 2 * 100), 100).toFixed(2) * 100;
-        validComments.forEach((comment, i) => {
-          setTimeout(() => {
-            console.log(`Upvoting: @${comment.author}/${comment.permlink} (Weight: ${weight / 100} %)`);
-            if (helper.BOT_PROD) {
-              helper.upvote(comment, weight);
-            }
-          }, (i + 2) * 5000); // first run after 10s (0 + 2 * 5000), that's 5s after the vote on
-          // the winning comment (which itself is 5s after the vote on the story post)
+        validComments.forEach((comment) => {
+          console.log(`Upvoting: @${comment.author}/${comment.permlink} (Weight: ${weight / 100} %)`);
+          helper.votingQueue.push({comment, weight});
         });
       }
+
+      // start processing voting queue
+      const voteInterval = setInterval(() => {
+        const options = helper.votingQueue.shift();
+        if (options) {
+          helper.upvote(options).then(() => {
+            if (helper.votingQueue.length === 0) {
+              clearInterval(voteInterval)
+            }
+          }).catch(() => {
+            // If there's an error, just push it back on the stack and retry it
+            helper.votingQueue.push(options);
+          });
+        }
+      }, 5000);
     }
   }
 })();
