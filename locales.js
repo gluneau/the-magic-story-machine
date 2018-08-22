@@ -33,7 +33,7 @@ module.exports = {
 ![avatar.png](https://cdn.steemitimages.com/DQmafQJVNLk9Z3uiaWuXNyHWzaSj2fbt7E1DjFTQFLrMLSr/avatar[1].png)
 </center>
 ### <center>Sou eu novamente...<br>O Sapo Mágico</center>
-## <center>[Leia minha história](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
+## <center>[Leia minha história](https://steemit.com/introduceyourself/@sapo-magico/esta-e-a-maquina-magica-de-estorias-ajude-o-nao-tao-sapo-magico-e-ganhe-um-pote-cheio-de-ouro-narrativa-colaborativa)</center>
 ##
 <center>O pote cheio de ouro:<br>[**$ {{pot}}**](https://pt.the-magic-frog.com)<br><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
     }
