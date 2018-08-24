@@ -87,7 +87,7 @@ module.exports = {
 ### <center><sup>Para participar visite:</sup><br>[pt.the-magic-frog.com](https://pt.the-magic-frog.com)</center>
 ###
 
-<center><sup>Se você quiser apoiar este projeto, sinta-se à vontade para **upvote** e **resteem** este post e ** siga @the-magic-frog ** mas o mais importante... **participe!**</sup></center>
+<center><sup>Se você quiser apoiar este projeto, sinta-se à vontade para **upvote** e **resteem** este post e **siga @sapo-magico** mas o mais importante... **participe!**</sup></center>
 
 <hr>\n
 
