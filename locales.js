@@ -9,9 +9,9 @@ module.exports = {
 ![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>It's me again...<br>The Magic Frog</center>
-## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
+<center>([About me](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win))</center>
 ##
-<center>**The Pot full of Gold:**</center>
+## <center>The Pot full of Gold:</center>
 <center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
 # <center>[**$ {{pot}}**](https://the-magic-frog.com)</center>
 <center><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
@@ -20,9 +20,9 @@ module.exports = {
 ![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>Ich bin's wieder...<br>Der Zauberfrosch</center>
-## <center>[Lies meine Geschichte](https://steemit.com/themagicfrog/@der-zauberfrosch/die-magische-geschichtenmaschine-hilf-dem-nicht-ganz-so-magischen-zauberfrosch-und-gewinne-einen-topf-voll-gold)</center>
+<center>([Über mich](https://steemit.com/themagicfrog/@der-zauberfrosch/die-magische-geschichtenmaschine-hilf-dem-nicht-ganz-so-magischen-zauberfrosch-und-gewinne-einen-topf-voll-gold))</center>
 ##
-<center>**Der Topf voll Gold:**</center>
+## <center>Der Topf voll Gold:</center>
 <center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
 # <center>[**$ {{pot}}**](https://de.the-magic-frog.com?1)</center>
 <center><sup>(Wirke deinen Upvote-Zauber auf diesen Post, um den Pot zu erhöhen!)</sup></center>`;
@@ -31,9 +31,9 @@ module.exports = {
 ![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>C'est encore moi...<br>La grenouille magique</center>
-## <center>[Lis mon histoire](https://steemit.com/introduceyourself/@grenouille/voici-la-mysterieuse-machine-a-histoire-aidez-la-grenouille-pas-si-magique-et-gagnez-un-pot-plein-d-or-narration-collective)</center>
+<center>([À propos de moi](https://steemit.com/introduceyourself/@grenouille/voici-la-mysterieuse-machine-a-histoire-aidez-la-grenouille-pas-si-magique-et-gagnez-un-pot-plein-d-or-narration-collective))</center>
 ##
-<center>**Le Pot plein d'Or:**</center>
+## <center>Le Pot plein d'Or:</center>
 <center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
 # <center>[**$ {{pot}}**](https://fr.the-magic-frog.com)</center>
 <center><sup>(Jetez votre sort en votant sur cet article pour élever le pot!)</sup></center>`;
@@ -42,9 +42,9 @@ module.exports = {
 ![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>Sou eu novamente...<br>O Sapo Mágico</center>
-## <center>[Leia minha história](https://steemit.com/introduceyourself/@sapo-magico/esta-e-a-maquina-magica-de-estorias-ajude-o-nao-tao-sapo-magico-e-ganhe-um-pote-cheio-de-ouro-narrativa-colaborativa)</center>
+<center>([Sobre mim](https://steemit.com/introduceyourself/@sapo-magico/esta-e-a-maquina-magica-de-estorias-ajude-o-nao-tao-sapo-magico-e-ganhe-um-pote-cheio-de-ouro-narrativa-colaborativa))</center>
 ##
-<center>**O pote cheio de ouro:**</center>
+## <center>O pote cheio de ouro:</center>
 <center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
 # <center>[**$ {{pot}}**](https://pt.the-magic-frog.com)</center>
 <center><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
@@ -65,7 +65,7 @@ module.exports = {
 <hr>\n
 
 # <center>ATTENTION!!!</center>
-### <center>Please do not edit your submissions on any other platform than [the-magic-frog.com](https://the-magic-frog.com)! Editing it elsewhere will have no effect! In addition to that, we just discovered a very annoying bug on busy.org that completely invalidates your submission after editing!</center>`;
+### <center>Please do not edit your submissions on any other platform than [the-magic-frog.com](https://the-magic-frog.com)! Editing it elsewhere will have no effect!</center>`;
       case 'de':
         return `
 <hr>\n
@@ -78,7 +78,7 @@ module.exports = {
 <hr>\n
 
 # <center>ACHTUNG!!!</center>
-### <center>Bitte bearbeitet eure Einreichungen ausschließlich auf [the-magic-frog.com](https://the-magic-frog.com)! Auf jeder anderen Platform hat das Bearbeiten des Kommentars keinen Effekt! Außerdem haben wir soeben einen sehr nervigen Bug auf busy.org entdeckt, der eure Einreichung nach dem Bearbeiten komplett ungültig macht!</center>`;
+### <center>Bitte bearbeitet eure Einreichungen ausschließlich auf [the-magic-frog.com](https://the-magic-frog.com)! Auf jeder anderen Platform hat das Bearbeiten des Kommentars keinen Effekt!</center>`;
       case 'fr':
         return `
 <hr>\n
@@ -91,7 +91,7 @@ module.exports = {
 <hr>\n
 
 # <center>ATTENTION!!!</center>
-### <center>Veuillez ne pas modifier vos soumissions sur une autre plateforme que sur [fr.the-magic-frog.com](https://fr.the-magic-frog.com)! L'éditer ailleurs n'aura pas l'effet désiré! En plus de cela, nous venons de découvrir un bug très ennuyeux sur busy.org qui invalide complètement votre soumission après l'édition.</center>`;
+### <center>Veuillez ne pas modifier vos soumissions sur une autre plateforme que sur [fr.the-magic-frog.com](https://fr.the-magic-frog.com)! L'éditer ailleurs n'aura pas l'effet désiré!</center>`;
       case 'pt':
         return `
 <hr>\n
@@ -104,7 +104,7 @@ module.exports = {
 <hr>\n
 
 # <center>ATENÇÃO!!!</center>
-### <center>Por favor, não edite seus envios em qualquer outra plataforma [pt.the-magic-frog.com](https://pt.the-magic-frog.com)! Editá-lo em outro lugar não terá efeito! Além disso, acabamos de descobrir um bug muito chato no busy.org que invalida completamente o seu envio após a edição!</center>`;
+### <center>Por favor, não edite seus envios em qualquer outra plataforma [pt.the-magic-frog.com](https://pt.the-magic-frog.com)! Editá-lo em outro lugar não terá efeito!</center>`;
     }
   },
   getWinnerTransferMemo(lang) {
