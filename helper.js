@@ -4,7 +4,7 @@ const axios = require('axios');
 const locales = require('./locales');
 
 module.exports = {
-  botAccountName: process.env.BOT_ACCOUNT_NAME,
+  BOT_ACCOUNT_NAME: process.env.BOT_ACCOUNT_NAME,
   BOT_KEY: process.env.BOT_KEY,
   BOT_TAGS: process.env.BOT_TAGS,
   BOT_LANG: process.env.BOT_LANG,
@@ -36,13 +36,13 @@ module.exports = {
     let startPermlink = null;
 
     do {
-      posts = await getPosts(this.botAccountName, startAuthor, startPermlink);
+      posts = await getPosts(this.BOT_ACCOUNT_NAME, startAuthor, startPermlink);
       lastPost = posts[posts.length - 1];
       startAuthor = lastPost.author;
       startPermlink = lastPost.permlink;
 
       for (let i = 0; i < posts.length; i += 1) {
-        if (posts[i].author === this.botAccountName) {
+        if (posts[i].author === this.BOT_ACCOUNT_NAME) {
           allPosts.push(posts[i]);
         }
       }
@@ -56,7 +56,7 @@ module.exports = {
   },
   getPot() {
     return new Promise((resolve, reject) => {
-      axios.get(`https://api.the-magic-frog.com/pot?account=${this.botAccountName}`).then((response) => {
+      axios.get(`https://api.the-magic-frog.com/pot?account=${this.BOT_ACCOUNT_NAME}`).then((response) => {
         resolve(response.data);
       }).catch((err) => {
         reject(err);
@@ -65,7 +65,7 @@ module.exports = {
   },
   getComments(permlink) {
     return new Promise((resolve, reject) => {
-      steem.api.getContentReplies(this.botAccountName, permlink, (err, comments) => {
+      steem.api.getContentReplies(this.BOT_ACCOUNT_NAME, permlink, (err, comments) => {
         if (err) {
           reject(err);
         } else {
@@ -76,7 +76,7 @@ module.exports = {
   },
   getAccount() {
     return new Promise((resolve, reject) => {
-      steem.api.getAccounts([this.botAccountName], (err, users) => {
+      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) => {
         if (err || users.length === 0) {
           reject(err);
         } else {
@@ -87,7 +87,7 @@ module.exports = {
   },
   getDelegators() {
     return new Promise((resolve, reject) => {
-      axios.get(`https://api.the-magic-frog.com/delegators?account=${this.botAccountName}`).then((response) => {
+      axios.get(`https://api.the-magic-frog.com/delegators?account=${this.BOT_ACCOUNT_NAME}`).then((response) => {
         resolve(response.data);
       }).catch((err) => {
         reject(err);
@@ -96,7 +96,7 @@ module.exports = {
   },
   getCurators(storyNumber) {
     return new Promise((resolve, reject) => {
-      axios.get(`https://api.the-magic-frog.com/curators?top=100&storyNumber=${storyNumber}&account=${this.botAccountName}`).then((response) => {
+      axios.get(`https://api.the-magic-frog.com/curators?top=100&storyNumber=${storyNumber}&account=${this.BOT_ACCOUNT_NAME}`).then((response) => {
         resolve(response.data);
       }).catch((err) => {
         reject(err);
@@ -112,12 +112,12 @@ module.exports = {
       ) {
         if (this.BOT_PROD) {
           steem.broadcast.claimRewardBalance(
-            this.BOT_KEY, this.botAccountName, account.reward_steem_balance,
+            this.BOT_KEY, this.BOT_ACCOUNT_NAME, account.reward_steem_balance,
             account.reward_sbd_balance, account.reward_vesting_balance, (err) => {
               if (err) {
                 reject(err);
               } else {
-                steem.api.getAccounts([this.botAccountName], (errs, users) => {
+                steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (errs, users) => {
                   if (errs || users.length === 0) {
                     reject(errs);
                   } else {
@@ -129,7 +129,7 @@ module.exports = {
           );
         }
       } else {
-        steem.api.getAccounts([this.botAccountName], (err, users) => {
+        steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) => {
           if (err || users.length === 0) {
             reject(err);
           } else {
@@ -143,7 +143,7 @@ module.exports = {
     return posts.filter((post) => {
       const meta = JSON.parse(post.json_metadata);
 
-      return post.author === this.botAccountName && Object.prototype.hasOwnProperty.call(meta, 'day') && Object.prototype.hasOwnProperty.call(meta, 'storyNumber');
+      return post.author === this.BOT_ACCOUNT_NAME && Object.prototype.hasOwnProperty.call(meta, 'day') && Object.prototype.hasOwnProperty.call(meta, 'storyNumber');
     });
   },
   getCurrentStoryPosts(allStoryPosts, storyNumber) {
@@ -289,7 +289,7 @@ module.exports = {
         {
           parent_author: '',
           parent_permlink: meta.tags[0],
-          author: this.botAccountName,
+          author: this.BOT_ACCOUNT_NAME,
           permlink,
           title,
           body,
@@ -299,7 +299,7 @@ module.exports = {
       [
         'comment_options',
         {
-          author: this.botAccountName,
+          author: this.BOT_ACCOUNT_NAME,
           permlink,
           max_accepted_payout: '1000000.000 SBD',
           percent_steem_dollars: 5000,
@@ -311,8 +311,8 @@ module.exports = {
       [
         'vote',
         {
-          voter: this.botAccountName,
-          author: this.botAccountName,
+          voter: this.BOT_ACCOUNT_NAME,
+          author: this.BOT_ACCOUNT_NAME,
           permlink,
           weight: 10000,
         },
@@ -331,7 +331,7 @@ module.exports = {
   upvote(options) {
     const {comment, weight} = options;
     return steem.api.getActiveVotesAsync(comment.author, comment.permlink)
-      .filter(vote => vote.voter === this.botAccountName && vote.percent > 0)
+      .filter(vote => vote.voter === this.BOT_ACCOUNT_NAME && vote.percent > 0)
       .then((votes) => {
         if (votes.length > 0) { // Already voted?
           return votes;
@@ -339,7 +339,7 @@ module.exports = {
 
         if (this.BOT_PROD) {
           return steem.broadcast.voteAsync(
-            this.BOT_KEY, this.botAccountName, comment.author, comment.permlink, weight,
+            this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight,
           ).then((results) => {
             // Handle results
           }).catch((error) => {
@@ -350,7 +350,7 @@ module.exports = {
   },
   transfer(to, amount, memo) {
     if (this.BOT_PROD) {
-      steem.broadcast.transfer(this.BOT_KEY, this.botAccountName, to, `${amount.toFixed(3)} SBD`, memo, (err) => {
+      steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, `${amount.toFixed(3)} SBD`, memo, (err) => {
         if (err) {
           console.log(err);
         }
