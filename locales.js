@@ -33,7 +33,7 @@ module.exports = {
 ![avatar.png](https://cdn.steemitimages.com/DQmafQJVNLk9Z3uiaWuXNyHWzaSj2fbt7E1DjFTQFLrMLSr/avatar[1].png)
 </center>
 ### <center>Sou eu novamente...<br>O Sapo Mágico</center>
-## <center>[Leia minha história](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
+## <center>[Leia minha história](https://steemit.com/introduceyourself/@sapo-magico/esta-e-a-maquina-magica-de-estorias-ajude-o-nao-tao-sapo-magico-e-ganhe-um-pote-cheio-de-ouro-narrativa-colaborativa)</center>
 ##
 <center>O pote cheio de ouro:<br>[**$ {{pot}}**](https://pt.the-magic-frog.com)<br><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
     }
@@ -87,7 +87,7 @@ module.exports = {
 ### <center><sup>Para participar visite:</sup><br>[pt.the-magic-frog.com](https://pt.the-magic-frog.com)</center>
 ###
 
-<center><sup>Se você quiser apoiar este projeto, sinta-se à vontade para **upvote** e **resteem** este post e ** siga @the-magic-frog ** mas o mais importante... **participe!**</sup></center>
+<center><sup>Se você quiser apoiar este projeto, sinta-se à vontade para **upvote** e **resteem** este post e **siga @sapo-magico** mas o mais importante... **participe!**</sup></center>
 
 <hr>\n
 
@@ -105,7 +105,7 @@ module.exports = {
       case 'fr':
         return 'Félicitations @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vous avez gagné la moitié du pot! Cela représente {{amount}} SBD. Hou la la! Merci d\'avoir participé!';
       case 'pt':
-        return 'Parabéns @{{receiver}}! A Estória mágica #{{storyNumber}} terminou e você ganhou metade do pote! Isso é {{amount}} SBD. Wow! Obrigado por participar!';
+        return 'Parabéns @{{receiver}}! A Estória Mágica #{{storyNumber}} terminou e você ganhou metade do pote! Isso é {{amount}} SBD. Wow! Obrigado por participar!';
     }
   },
   getLoserTransferMemo(lang) {
@@ -118,7 +118,7 @@ module.exports = {
       case 'fr':
         return 'Allô @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vous avez contribué {{contributionCount}} fois! Cela représente {{amount}} SBD pour vous. Hou la la! Merci d\'avoir participé!';
       case 'pt':
-        return 'Hey @{{receiver}}! A Estória mágica #{{storyNumber}} terminou e você contribuiu{{contributionCount}}vezes! Isto rendeu {{amount}} SBD para você. Wow! Obrigado por participar!';
+        return 'Hey @{{receiver}}! A Estória Mágica #{{storyNumber}} terminou e você contribuiu{{contributionCount}}vezes! Isto rendeu {{amount}} SBD para você. Wow! Obrigado por participar!';
     }
   },
   getDelegatorTransferMemo(lang) {
@@ -131,7 +131,7 @@ module.exports = {
       case 'fr':
         return 'Allô @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vous avez délégué {{sp}} SP à la @grenouille magique! Cela représente {{amount}} SBD pour vous. Hou la la! Merci pour votre support!';
       case 'pt':
-        return 'Hey @{{receiver}}! A Estória mágica #{{storyNumber}} terminou e você delegou {{sp}} SP para @sapo-magico! Isto rendeu  {{amount}} SBD para você. Wow! Obrigado por participar!';
+        return 'Hey @{{receiver}}! A Estória Mágica #{{storyNumber}} terminou e você delegou {{sp}} SP para @sapo-magico! Isto rendeu  {{amount}} SBD para você. Wow! Obrigado por participar!';
     }
   },
   getCuratorTransferMemo(lang) {
@@ -144,7 +144,7 @@ module.exports = {
       case 'fr':
         return 'Allô @{{receiver}}! L\'histoire magique #{{storyNumber}} est terminée et vos votes ont contribués {{sbd}} SBD au pot! Et en retour vous receverez {{amount}} SBD. Hou la la! Merci pour votre support!';
       case 'pt':
-        return 'Hey @{{receiver}}! A Estória mágica #{{storyNumber}} terminou e com o seu upvote você adicionou {{sbd}} SBD para o pote! Em retorno você recebe {{amount}} SBD de volta. Wow! brigado por participar!';
+        return 'Hey @{{receiver}}! A Estória Mágica #{{storyNumber}} terminou e com o seu upvote você adicionou {{sbd}} SBD para o pote! Em retorno você recebe {{amount}} SBD de volta. Wow! brigado por participar!';
     }
   },
   getPostTitle(lang) {
@@ -157,7 +157,7 @@ module.exports = {
       case 'fr':
         return 'Histoire Magique #{{storyNumber}} Jour {{day}}';
       case 'pt':
-        return 'A Estória mágica #{{storyNumber}} Dia {{day}}';
+        return 'A Estória Mágica #{{storyNumber}} Dia {{day}}';
     }
   },
   getPostPermlink(lang) {
