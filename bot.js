@@ -104,6 +104,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
         // transfer loser splitpot
         console.log('\nStoryteller Rewards:');
+        console.log('Storyteller | Contributions | Story Share | Reward');
         loserTransfers.forEach((transfer) => {
           const amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
@@ -135,9 +136,10 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
           // transfer delegator splitpot
           console.log('\nDelegator Rewards:');
+          console.log('Delegator | Delegation | Delegation Share | Reward')
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log(`@${transfer.delegator} | ${transfer.sp.toFixed(0)} | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
+              console.log(`@${transfer.delegator} | ${transfer.sp.toFixed(0)} SP | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
               helper.transfer(
                 transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(
                   transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp,
@@ -168,9 +170,10 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
           // transfer curator splitpot
           console.log('\nCurator Rewards:');
+          console.log('Curator | Curation Share (Value) | Reward')
           curatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log(`@${transfer.curator} | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
+              console.log(`@${transfer.curator} | ${transfer.percentage.toFixed(2)}% (${transfer.sbd.toFixed(3)} SBD) | ${transfer.amount.toFixed(3)} SBD`);
               helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(
                 transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd,
               ));
@@ -182,7 +185,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
         const intro = helper.getPostIntro(0);
         const footer = helper.getPostFooter();
 
-        console.log('Story has ended. Starting a new one...');
+        console.log('\nStory has ended. Starting a new one...');
         lastPostMeta.commands = [];
         lastPostMeta.startPhrase = helper.getStartPhrase();
         helper.post(
@@ -192,7 +195,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
           1,
         );
       } else {
-        console.log('Master! There is not enough gold to distribute all the rewards!');
+        console.log('\nMaster! There is not enough gold to distribute all the rewards!');
       }
     } else if (command) {
       // continue story
