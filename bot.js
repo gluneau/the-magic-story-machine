@@ -17,6 +17,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
   // get data from blockchain
   console.log('Fetching data...');
+  const pot = await helper.getPot();
   const rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
   const delegators = await helper.getDelegators();
   let account = await helper.getAccount();
@@ -43,7 +44,6 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
   const lastPostMeta = JSON.parse(lastPost.json_metadata);
   const storyHasEnded = helper.hasStoryEnded(lastPostMeta.commands);
   const currentStoryPosts = helper.getCurrentStoryPosts(allStoryPosts, lastPostMeta.storyNumber);
-  const pot = helper.getPotValue(currentStoryPosts);
   const validComments = helper.getAllValidComments(comments, lastPostMeta.day > 10);
   const command = helper.getMostUpvotedCommand(validComments);
 
@@ -52,25 +52,18 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
   // prepare reward distribution data
   const rewardableCommands = lastPostMeta.commands.filter(command => command.author !== 'the-fly-swarm'); // exclude guest account
-  const delegatorPot = pot * 0.25;
-  const curatorPot = pot * 0.25;
-  const storytellerPot = pot * 0.5;
-  const splitRatio = 0.5; // 1 = 100% for the winner, 0 = 100% for the others...
-  // lol as if you would randomly choose someone who is the only one who gets nothing... :D
-  const winnerPot = (storytellerPot * splitRatio);
   const luckyNumber = Math.floor(Math.random() * rewardableCommands.length);
   const winnerCommand = rewardableCommands[luckyNumber];
-  const loserPot = (storytellerPot * (1 - splitRatio));
   const loserCommands = rewardableCommands.filter(
     command => command.author !== winnerCommand.author,
   );
-  const singleLoserPot = loserPot / loserCommands.length;
+  const singleLoserPot = pot.others / loserCommands.length;
 
   if (posts.length && account) {
     console.log(`Found ${currentStoryPosts.length} posts in current story.`);
     console.log(`Found ${validComments.length} valid commands for latest story post.`);
     console.log(`Most upvoted command: ${JSON.stringify(command)}`);
-    console.log(`Pot value: ${pot}`);
+    console.log(`Pot value: ${pot.total}`);
 
     if (storyHasEnded) {
       // claim rewards and update account
@@ -78,15 +71,15 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
       account = await helper.claimRewards(account);
 
       // distribute rewards if possible
-      if (pot && parseFloat(account.sbd_balance) >= pot) {
+      if (pot.total && parseFloat(account.sbd_balance) >= pot.total) {
         console.log('Distributing rewards.');
         console.log(`Aaaaand the winner is: ${winnerCommand.author}`);
 
         // transfer winner pot
-        if (winnerPot >= 0.001) {
-          console.log(`Transferring ${winnerPot.toFixed(3)} SBD to ${winnerCommand.author}...`);
-          helper.transfer(winnerCommand.author, winnerPot, helper.getWinnerTransferMemo(
-            winnerCommand.author, winnerPot, lastPostMeta.storyNumber,
+        if (pot.winner >= 0.001) {
+          console.log(`Transferring ${pot.winner.toFixed(3)} SBD to ${winnerCommand.author}...`);
+          helper.transfer(winnerCommand.author, pot.winner, helper.getWinnerTransferMemo(
+            winnerCommand.author, pot.winner, lastPostMeta.storyNumber,
           ));
         }
 
@@ -135,7 +128,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
             delegatorTransfers.push({
               delegator: delegator.delegator,
               percentage,
-              amount: delegatorPot * percentage / 100,
+              amount: pot.delegators * percentage / 100,
               sp: delegator.sp,
             });
           });
@@ -168,7 +161,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
             curatorTransfers.push({
               curator: curator.voter,
               percentage,
-              amount: curatorPot * percentage / 100,
+              amount: pot.curators * percentage / 100,
               sbd: curator.rshares * rsharesToSBDFactor,
             });
           });
@@ -204,7 +197,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
       // continue story
       lastPostMeta.commands.push(command);
 
-      const intro = helper.getPostIntro(pot);
+      const intro = helper.getPostIntro(pot.total);
       const footer = helper.getPostFooter();
 
       const storyBody = helper.buildStoryBody(lastPostMeta.commands);

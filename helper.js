@@ -54,6 +54,15 @@ module.exports = {
 
     return allPosts;
   },
+  getPot() {
+    return new Promise((resolve, reject) => {
+      axios.get(`https://api.the-magic-frog.com/pot?account=${this.botAccountName}`).then((response) => {
+        resolve(response.data);
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  },
   getComments(permlink) {
     return new Promise((resolve, reject) => {
       steem.api.getContentReplies(this.botAccountName, permlink, (err, comments) => {
@@ -142,21 +151,6 @@ module.exports = {
       const meta = JSON.parse(post.json_metadata);
       return parseInt(meta.storyNumber, 10) === storyNumber;
     });
-  },
-  getPotValue(currentStoryPosts) {
-    let pot = 0;
-    for (let i = 0; i < currentStoryPosts.length; i += 1) {
-      pot += parseFloat(this.getPostPot(currentStoryPosts[i]));
-    }
-    pot *= 0.95; // 5 % goes to beneficiaries
-    return pot;
-  },
-  getPostPot(post) {
-    if (post.last_payout === '1970-01-01T00:00:00') {
-      return parseFloat(post.pending_payout_value.replace(' SBD', '')) * 0.75 / 2;
-    }
-
-    return (parseFloat(post.total_payout_value.replace(' SBD', '')) / 2).toFixed(2);
   },
   getAllValidComments(comments, canEnd) {
     const validComments = [];
