@@ -6,36 +6,48 @@ module.exports = {
       case 'en':
       default:
         return `<center>
-![avatar.png](https://cdn.steemitimages.com/DQmafQJVNLk9Z3uiaWuXNyHWzaSj2fbt7E1DjFTQFLrMLSr/avatar[1].png)
+![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>It's me again...<br>The Magic Frog</center>
 ## <center>[Read my story](https://steemit.com/introduceyourself/@the-magic-frog/this-is-the-magic-story-machine-help-the-not-so-magic-frog-collaborative-storytelling-click-it-there-s-money-to-win)</center>
 ##
-<center>The Pot full of Gold:<br>[**$ {{pot}}**](https://the-magic-frog.com)<br><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
+<center>**The Pot full of Gold:**</center>
+<center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
+# <center>[**$ {{pot}}**](https://the-magic-frog.com)</center>
+<center><sup>(Cast your Upvote Spell on this post to raise the pot!)</sup></center>`;
       case 'de':
         return `<center>
-![avatar.png](https://cdn.steemitimages.com/DQmafQJVNLk9Z3uiaWuXNyHWzaSj2fbt7E1DjFTQFLrMLSr/avatar[1].png)
+![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>Ich bin's wieder...<br>Der Zauberfrosch</center>
 ## <center>[Lies meine Geschichte](https://steemit.com/themagicfrog/@der-zauberfrosch/die-magische-geschichtenmaschine-hilf-dem-nicht-ganz-so-magischen-zauberfrosch-und-gewinne-einen-topf-voll-gold)</center>
 ##
-<center>Der Topf voll Gold:<br>[**$ {{pot}}**](https://de.the-magic-frog.com)<br><sup>(Wirke deinen Upvote-Zauber auf diesen Post, um den Pot zu erhöhen!)</sup></center>`;
+<center>**Der Topf voll Gold:**</center>
+<center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
+# <center>[**$ {{pot}}**](https://de.the-magic-frog.com?1)</center>
+<center><sup>(Wirke deinen Upvote-Zauber auf diesen Post, um den Pot zu erhöhen!)</sup></center>`;
       case 'fr':
         return `<center>
-![avatar.png](https://cdn.steemitimages.com/DQmafQJVNLk9Z3uiaWuXNyHWzaSj2fbt7E1DjFTQFLrMLSr/avatar[1].png)
+![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>C'est encore moi...<br>La grenouille magique</center>
 ## <center>[Lis mon histoire](https://steemit.com/introduceyourself/@grenouille/voici-la-mysterieuse-machine-a-histoire-aidez-la-grenouille-pas-si-magique-et-gagnez-un-pot-plein-d-or-narration-collective)</center>
 ##
-<center>Le Pot plein d'Or:<br>[**$ {{pot}}**](https://fr.the-magic-frog.com)<br><sup>(Jetez votre sort en votant sur cet article pour élever le pot!)</sup></center>`;
+<center>**Le Pot plein d'Or:**</center>
+<center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
+# <center>[**$ {{pot}}**](https://fr.the-magic-frog.com)</center>
+<center><sup>(Jetez votre sort en votant sur cet article pour élever le pot!)</sup></center>`;
       case 'pt':
         return `<center>
-![avatar.png](https://cdn.steemitimages.com/DQmafQJVNLk9Z3uiaWuXNyHWzaSj2fbt7E1DjFTQFLrMLSr/avatar[1].png)
+![avatar.png](https://the-magic-frog.com/avatar.png?1)
 </center>
 ### <center>Sou eu novamente...<br>O Sapo Mágico</center>
 ## <center>[Leia minha história](https://steemit.com/introduceyourself/@sapo-magico/esta-e-a-maquina-magica-de-estorias-ajude-o-nao-tao-sapo-magico-e-ganhe-um-pote-cheio-de-ouro-narrativa-colaborativa)</center>
 ##
-<center>O pote cheio de ouro:<br>[**$ {{pot}}**](https://pt.the-magic-frog.com)<br><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
+<center>**O pote cheio de ouro:**</center>
+<center>![pot.png](https://the-magic-frog.com/pot.png?1)</center>
+# <center>[**$ {{pot}}**](https://pt.the-magic-frog.com)</center>
+<center><sup>(Lança seu feitiço de Upvote neste post para aumentar o pote!)</sup></center>`;
     }
   },
   getFooter(lang) {
