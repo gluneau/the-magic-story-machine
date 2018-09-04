@@ -17,10 +17,10 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
   // get data from blockchain
   console.log('Fetching data...');
-  const pot = await helper.getPot();
   const rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
   const delegators = await helper.getDelegators();
-  let account = await helper.getAccount();
+  const account = await helper.getAccount();
+  const pot = await helper.getPot();
   const posts = await helper.getPosts();
   let comments = [];
   for (let i = 0; i < posts.length; i += 1) {
@@ -66,10 +66,6 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
     console.log(`Pot value: ${pot.total}`);
 
     if (storyHasEnded) {
-      // claim rewards and update account
-      console.log('Claiming Rewards...');
-      account = await helper.claimRewards(account);
-
       // distribute rewards if possible
       if (pot.total && parseFloat(account.sbd_balance) >= pot.total) {
         console.log('Distributing rewards.');

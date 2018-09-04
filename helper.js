@@ -76,11 +76,44 @@ module.exports = {
   },
   getAccount() {
     return new Promise((resolve, reject) => {
-      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) => {
-        if (err || users.length === 0) {
-          reject(err);
-        } else {
-          resolve(users[0]);
+      // first get account
+      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
+        if (err || accounts.length === 0) reject(err);
+        else {
+          let account = accounts[0];
+
+          // claim rewards (if something to claim)
+          if (
+            (
+              parseFloat(account.reward_steem_balance) > 0 ||
+              parseFloat(account.reward_sbd_balance) > 0 ||
+              parseFloat(account.reward_vesting_balance) > 0
+            ) && this.BOT_PROD
+          ) {
+            steem.broadcast.claimRewardBalance(
+              this.BOT_KEY,
+              this.BOT_ACCOUNT_NAME,
+              account.reward_steem_balance,
+              account.reward_sbd_balance,
+              account.reward_vesting_balance,
+              (err) => {
+                // if no error then update account
+                if (err) reject(err);
+                else {
+                  steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
+                    if (err || accounts.length === 0) {
+                      reject(err);
+                    } else {
+                      resolve(accounts[0]);
+                    }
+                  });
+                }
+              }
+            );
+          } else {
+            // if nothing to claim, return account immediately
+            resolve(account);
+          }
         }
       });
     });
@@ -101,42 +134,6 @@ module.exports = {
       }).catch((err) => {
         reject(err);
       });
-    });
-  },
-  claimRewards(account) {
-    return new Promise((resolve, reject) => {
-      if (
-        parseFloat(account.reward_steem_balance) > 0
-        || parseFloat(account.reward_sbd_balance) > 0
-        || parseFloat(account.reward_vesting_balance) > 0
-      ) {
-        if (this.BOT_PROD) {
-          steem.broadcast.claimRewardBalance(
-            this.BOT_KEY, this.BOT_ACCOUNT_NAME, account.reward_steem_balance,
-            account.reward_sbd_balance, account.reward_vesting_balance, (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (errs, users) => {
-                  if (errs || users.length === 0) {
-                    reject(errs);
-                  } else {
-                    resolve(users[0]);
-                  }
-                });
-              }
-            },
-          );
-        }
-      } else {
-        steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) => {
-          if (err || users.length === 0) {
-            reject(err);
-          } else {
-            resolve(users[0]);
-          }
-        });
-      }
     });
   },
   getAllStoryPosts(posts) {
