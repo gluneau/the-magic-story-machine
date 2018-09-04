@@ -184,6 +184,7 @@ if (!helper.botAccountName || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.BOT
 
         console.log('Story has ended. Starting a new one...');
         lastPostMeta.commands = [];
+        lastPostMeta.startPhrase = helper.getStartPhrase();
         helper.post(
           `${intro}\n\n# ${lastPostMeta.startPhrase}\n# \n\n## ${lastPostMeta.toBeContinued}\n\n${footer}`,
           lastPostMeta,

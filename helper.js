@@ -264,6 +264,9 @@ module.exports = {
       });
     });
   },
+  getStartPhrase() {
+    return locales.getStartPhrase(this.BOT_LANG);
+  },
   getEndPhrase() {
     return locales.getEndPhrase(this.BOT_LANG);
   },

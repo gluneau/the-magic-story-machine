@@ -198,6 +198,19 @@ module.exports = {
         return `(por @${author})`;
     }
   },
+  getStartPhrase(lang) {
+    switch (lang) {
+      case 'en':
+      default:
+        return 'Once upon a time...';
+      case 'de':
+        return 'Es war ein mal...';
+      case 'fr':
+        return 'Il était une fois...';
+      case 'pt':
+        return 'Era uma vez...';
+    }
+  },
   getEndPhrase(lang) {
     switch (lang) {
       case 'en':
