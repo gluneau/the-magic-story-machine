@@ -1,4 +1,6 @@
+require('dotenv').config();
 const steem = require('steem');
+const axios = require('axios');
 const locales = require('./locales');
 
 module.exports = {
@@ -6,15 +8,17 @@ module.exports = {
   BOT_KEY: process.env.BOT_KEY,
   BOT_TAGS: process.env.BOT_TAGS,
   BOT_LANG: process.env.BOT_LANG,
+  BOT_PROD: process.env.BOT_PROD,
   commands: ['end', 'append'],
+  votingQueue: [],
   async getPosts() {
-    const getPosts = function (account, start_author, start_permlink) {
+    const getPosts = function getPosts(account, startAuthor, startPermlink) {
       return new Promise((resolve, reject) => {
         steem.api.getDiscussionsByBlog({
           tag: account,
           limit: 100,
-          start_author: start_author,
-          start_permlink: start_permlink
+          start_author: startAuthor,
+          start_permlink: startPermlink,
         }, (err, res) => {
           if (!err) {
             resolve(res);
@@ -37,17 +41,27 @@ module.exports = {
       startAuthor = lastPost.author;
       startPermlink = lastPost.permlink;
 
-      for (let i = 0; i < posts.length; i++) {
+      for (let i = 0; i < posts.length; i += 1) {
         if (posts[i].author === this.BOT_ACCOUNT_NAME) {
           allPosts.push(posts[i]);
         }
       }
 
-      allPosts = allPosts.filter((post, index, self) => self.findIndex(p => p.permlink === post.permlink) === index)
-
+      allPosts = allPosts.filter((post, index, self) => self.findIndex(
+        p => p.permlink === post.permlink,
+      ) === index);
     } while (posts.length === 100);
 
     return allPosts;
+  },
+  getPot() {
+    return new Promise((resolve, reject) => {
+      axios.get(`https://api.the-magic-frog.com/pot?account=${this.BOT_ACCOUNT_NAME}`).then((response) => {
+        resolve(response.data);
+      }).catch((err) => {
+        reject(err);
+      });
+    });
   },
   getComments(permlink) {
     return new Promise((resolve, reject) => {
@@ -62,97 +76,100 @@ module.exports = {
   },
   getAccount() {
     return new Promise((resolve, reject) => {
-      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) => {
-        if (err || users.length === 0) {
-          reject(err);
-        } else {
-          resolve(users[0]);
+      // first get account
+      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
+        if (err || accounts.length === 0) reject(err);
+        else {
+          let account = accounts[0];
+
+          // claim rewards (if something to claim)
+          if (
+            (
+              parseFloat(account.reward_steem_balance) > 0 ||
+              parseFloat(account.reward_sbd_balance) > 0 ||
+              parseFloat(account.reward_vesting_balance) > 0
+            ) && this.BOT_PROD
+          ) {
+            steem.broadcast.claimRewardBalance(
+              this.BOT_KEY,
+              this.BOT_ACCOUNT_NAME,
+              account.reward_steem_balance,
+              account.reward_sbd_balance,
+              account.reward_vesting_balance,
+              (err) => {
+                // if no error then update account
+                if (err) reject(err);
+                else {
+                  steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
+                    if (err || accounts.length === 0) {
+                      reject(err);
+                    } else {
+                      resolve(accounts[0]);
+                    }
+                  });
+                }
+              }
+            );
+          } else {
+            // if nothing to claim, return account immediately
+            resolve(account);
+          }
         }
       });
     });
   },
-  claimRewards(account) {
+  getDelegators() {
     return new Promise((resolve, reject) => {
-      if (
-        parseFloat(account.reward_steem_balance) > 0 ||
-        parseFloat(account.reward_sbd_balance) > 0 ||
-        parseFloat(account.reward_vesting_balance) > 0
-      ) {
-        steem.broadcast.claimRewardBalance(this.BOT_KEY, this.BOT_ACCOUNT_NAME, account.reward_steem_balance, account.reward_sbd_balance, account.reward_vesting_balance, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) =>  {
-              if (err || users.length === 0) {
-                reject(err);
-              } else {
-                resolve(users[0]);
-              }
-            });
-          }
-        });
-      } else {
-        steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, users) =>  {
-          if (err || users.length === 0) {
-            reject(err);
-          } else {
-            resolve(users[0]);
-          }
-        });
-      }
+      axios.get(`https://api.the-magic-frog.com/delegators?account=${this.BOT_ACCOUNT_NAME}`).then((response) => {
+        resolve(response.data);
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  },
+  getCurators(storyNumber) {
+    return new Promise((resolve, reject) => {
+      axios.get(`https://api.the-magic-frog.com/curators?top=100&storyNumber=${storyNumber}&account=${this.BOT_ACCOUNT_NAME}`).then((response) => {
+        resolve(response.data);
+      }).catch((err) => {
+        reject(err);
+      });
     });
   },
   getAllStoryPosts(posts) {
-    return posts.filter(post => {
-      let meta = JSON.parse(post.json_metadata);
+    return posts.filter((post) => {
+      const meta = JSON.parse(post.json_metadata);
 
-      return post.author === this.BOT_ACCOUNT_NAME && meta.hasOwnProperty('day') && meta.hasOwnProperty('storyNumber')
+      return post.author === this.BOT_ACCOUNT_NAME && Object.prototype.hasOwnProperty.call(meta, 'day') && Object.prototype.hasOwnProperty.call(meta, 'storyNumber');
     });
   },
   getCurrentStoryPosts(allStoryPosts, storyNumber) {
-    return allStoryPosts.filter(post => {
-      let meta = JSON.parse(post.json_metadata);
-      return parseInt(meta.storyNumber) === storyNumber
+    return allStoryPosts.filter((post) => {
+      const meta = JSON.parse(post.json_metadata);
+      return parseInt(meta.storyNumber, 10) === storyNumber;
     });
   },
-  getPotValue(currentStoryPosts) {
-    let pot = 0;
-    for (let i = 0; i < currentStoryPosts.length; i++) {
-      pot += parseFloat(this.getPostPot(currentStoryPosts[i]));
-    }
-    pot *= 0.95; // 5 % goes to beneficiaries
-    return pot;
-  },
-  getPostPot(post) {
-    if (post.last_payout === '1970-01-01T00:00:00') {
-      return parseFloat(post.pending_payout_value.replace(' SBD', '')) * 0.75 / 2;
-    }
-
-    return (parseFloat(post.total_payout_value.replace(' SBD', '')) / 2).toFixed(2);
-  },
   getAllValidComments(comments, canEnd) {
-    let validComments = [];
+    const validComments = [];
 
     if (comments.length) {
       // sort by votes
-      comments.sort((a, b) => {
-        return a.net_votes - b.net_votes;
-      });
-      comments = comments.reverse();
+      comments.sort((a, b) => b.net_votes - a.net_votes);
 
       // find valid commands
-      for (let i = 0; i < comments.length; i++) {
-        let comment = comments[i];
+      for (let i = 0; i < comments.length; i += 1) {
+        const comment = comments[i];
         if (comment.json_metadata) {
-          let command = JSON.parse(comment.json_metadata);
+          const command = JSON.parse(comment.json_metadata);
           if (
-            // image property seems to be removed when empty and comment edited on steemit, idk why... comment property doesn't seem to be removed
+            // image property seems to be removed when empty and comment edited on steemit,
+            // idk why... comment property doesn't seem to be removed
             // we'll only check for type now
             // command.hasOwnProperty('appendText') &&
             // command.hasOwnProperty('image') &&
             // command.hasOwnProperty('comment') &&
-            command.hasOwnProperty('type') &&
-            this.commands.indexOf(command.type) !== -1
+            Object.prototype.hasOwnProperty.call(command, 'type')
+            && this.commands.indexOf(command.type) !== -1
           ) {
             if ((command.type === 'end' && canEnd) || (command.type === 'append' && command.appendText.length < 251)) {
               validComments.push(comment);
@@ -176,13 +193,13 @@ module.exports = {
   },
   buildStoryBody(commands) {
     let storyBody = '';
-    commands.forEach(command => {
+    commands.forEach((command) => {
       if (command.appendText && command.image) {
-        storyBody += command.appendText + '\n\n' + command.image + '\n' + '<sup>' + locales.getAttribution(this.BOT_LANG, command.author) + '</sup>\n\n';
+        storyBody += `${command.appendText}\n\n${command.image}\n<sup>${locales.getAttribution(this.BOT_LANG, command.author)}</sup>\n\n`;
       } else if (command.appendText) {
-        storyBody += command.appendText + '\n' + '<sup>' + locales.getAttribution(this.BOT_LANG, command.author) + '</sup>\n\n';
+        storyBody += `${command.appendText}\n<sup>${locales.getAttribution(this.BOT_LANG, command.author)}</sup>\n\n`;
       } else if (command.image) {
-        storyBody += command.image + '\n' + '<sup>' + locales.getAttribution(this.BOT_LANG, command.author) + '</sup>\n\n';
+        storyBody += `${command.image}\n<sup>${locales.getAttribution(this.BOT_LANG, command.author)}</sup>\n\n`;
       }
     });
     return storyBody;
@@ -207,6 +224,49 @@ module.exports = {
       .replace('{{contributionCount}}', contributionCount)
       .replace('{{storyNumber}}', storyNumber);
   },
+  getDelegatorTransferMemo(receiver, amount, storyNumber, sp) {
+    return locales.getDelegatorTransferMemo(this.BOT_LANG)
+      .replace('{{receiver}}', receiver)
+      .replace('{{amount}}', amount.toFixed(3))
+      .replace('{{sp}}', sp.toFixed(3))
+      .replace('{{storyNumber}}', storyNumber);
+  },
+  getCuratorTransferMemo(receiver, amount, storyNumber, sbd) {
+    return locales.getCuratorTransferMemo(this.BOT_LANG)
+      .replace('{{receiver}}', receiver)
+      .replace('{{amount}}', amount.toFixed(3))
+      .replace('{{sbd}}', sbd.toFixed(3))
+      .replace('{{storyNumber}}', storyNumber);
+  },
+  getRsharesToSBDFactor() {
+    return new Promise((resolve, reject) => {
+      // get reward fund for posts
+      steem.api.getRewardFund('post', (err, fund) => {
+        if (err) reject(err);
+        else {
+          const rewardBalance = parseFloat(fund.reward_balance.replace(' STEEM', ''));
+          const recentClaims = parseInt(fund.recent_claims, 10);
+
+          // get SBD price factor
+          steem.api.getCurrentMedianHistoryPrice((errs, price) => {
+            if (errs) reject(errs);
+            else {
+              const SBDPrice = parseFloat(price.base.replace(' SBD', ''));
+
+              // calculate SBD value for each vote
+              resolve(rewardBalance / recentClaims * SBDPrice);
+            }
+          });
+        }
+      });
+    });
+  },
+  getStartPhrase() {
+    return locales.getStartPhrase(this.BOT_LANG);
+  },
+  getEndPhrase() {
+    return locales.getEndPhrase(this.BOT_LANG);
+  },
   post(body, meta, storyNumber, day) {
     const title = locales.getPostTitle(this.BOT_LANG).replace('{{storyNumber}}', storyNumber).replace('{{day}}', day);
     const permlink = locales.getPostPermlink(this.BOT_LANG).replace('{{storyNumber}}', storyNumber).replace('{{day}}', day);
@@ -216,59 +276,82 @@ module.exports = {
     meta.tags = this.BOT_TAGS.split(',').map(tag => tag.trim());
     meta.app = 'the-magic-story-machine/0.1';
 
-    steem.broadcast.comment(this.BOT_KEY, '', meta.tags[0], this.BOT_ACCOUNT_NAME, permlink, title, body, meta, (err) => {
-      if (!err) {
-        // set beneficiaries
-        const extensions = [[0, {
-          beneficiaries: [
-            {
-              account: 'mkt',
-              weight: 500
-            }
-          ]
-        }]];
-        steem.broadcast.commentOptions(this.BOT_KEY, this.BOT_ACCOUNT_NAME, permlink, '1000000.000 SBD', 5000, true, true, extensions, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
+    const extensions = locales.getBeneficiaries(this.BOT_LANG);
+    const keys = {
+      posting: this.BOT_KEY,
+    };
+    const operations = [
+      [
+        'comment',
+        {
+          parent_author: '',
+          parent_permlink: meta.tags[0],
+          author: this.BOT_ACCOUNT_NAME,
+          permlink,
+          title,
+          body,
+          json_metadata: JSON.stringify(meta),
+        },
+      ],
+      [
+        'comment_options',
+        {
+          author: this.BOT_ACCOUNT_NAME,
+          permlink,
+          max_accepted_payout: '1000000.000 SBD',
+          percent_steem_dollars: 5000,
+          allow_votes: true,
+          allow_curation_rewards: true,
+          extensions,
+        },
+      ],
+      [
+        'vote',
+        {
+          voter: this.BOT_ACCOUNT_NAME,
+          author: this.BOT_ACCOUNT_NAME,
+          permlink,
+          weight: 10000,
+        },
+      ],
+    ];
 
-        // vote
-        steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, this.BOT_ACCOUNT_NAME, permlink, 10000);
-      } else {
+    if (this.BOT_PROD) {
+      return steem.broadcast.sendAsync({
+        extensions: [],
+        operations,
+      }, keys).catch((err) => {
         console.log(err);
-      }
-    });
+      });
+    }
   },
-  upvote(comment, weight) {
-    steem.api.getActiveVotes(comment.author, comment.permlink, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        // check if already voted
-        let voted = false;
-        result.forEach((vote) => {
-          if (vote.voter === this.BOT_ACCOUNT_NAME && vote.percent > 0) {
-            voted = true;
-          }
-        });
+  upvote(options) {
+    const {comment, weight} = options;
+    return steem.api.getActiveVotesAsync(comment.author, comment.permlink)
+      .filter(vote => vote.voter === this.BOT_ACCOUNT_NAME && vote.percent > 0)
+      .then((votes) => {
+        if (votes.length > 0) { // Already voted?
+          return votes;
+        }
 
-        // vote
-        if (!voted) {
-          steem.broadcast.vote(this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight, (err) => {
-            if (err) {
-              console.log(err);
-            }
+        if (this.BOT_PROD) {
+          return steem.broadcast.voteAsync(
+            this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight,
+          ).then((results) => {
+            // Handle results
+          }).catch((error) => {
+            // Handle voting error
           });
         }
-      }
-    });
+      });
   },
   transfer(to, amount, memo) {
-    steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, amount.toFixed(3) + ' SBD', memo, function(err) {
-      if (err) {
-        console.log(err);
-      }
-    });
-  }
+    if (this.BOT_PROD) {
+      steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, `${amount.toFixed(3)} SBD`, memo, (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+  },
 };
