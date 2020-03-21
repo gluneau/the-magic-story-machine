@@ -1,7 +1,7 @@
 require('dotenv').config();
-const steem = require('steem');
+const hive = require('steem-js-patched');
 
-steem.api.getDiscussionsByBlog({
+hive.api.getDiscussionsByBlog({
   tag: 'lagrenouillemagique',
   limit: 1,
 }, (err, posts) => {
@@ -16,7 +16,7 @@ steem.api.getDiscussionsByBlog({
     meta.day = 1;
     meta.storyNumber = 1;
 
-    steem.broadcast.comment(process.env.BOT_KEY, '', meta.tags[0], post.author, post.permlink, post.title, post.body, meta, (errs, result) => {
+    hive.broadcast.comment(process.env.BOT_KEY, '', meta.tags[0], post.author, post.permlink, post.title, post.body, meta, (errs, result) => {
       console.log(errs, result);
     });
   }

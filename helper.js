@@ -1,5 +1,5 @@
 require('dotenv').config();
-const steem = require('steem');
+const hive = require('steem-js-patched');
 const axios = require('axios');
 const locales = require('./locales');
 
@@ -14,7 +14,7 @@ module.exports = {
   async getPosts() {
     const getPosts = function getPosts(account, startAuthor, startPermlink) {
       return new Promise((resolve, reject) => {
-        steem.api.getDiscussionsByBlog({
+        hive.api.getDiscussionsByBlog({
           tag: account,
           limit: 100,
           start_author: startAuthor,
@@ -65,7 +65,7 @@ module.exports = {
   },
   getComments(permlink) {
     return new Promise((resolve, reject) => {
-      steem.api.getContentReplies(this.BOT_ACCOUNT_NAME, permlink, (err, comments) => {
+      hive.api.getContentReplies(this.BOT_ACCOUNT_NAME, permlink, (err, comments) => {
         if (err) {
           reject(err);
         } else {
@@ -77,7 +77,7 @@ module.exports = {
   getAccount() {
     return new Promise((resolve, reject) => {
       // first get account
-      steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
+      hive.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
         if (err || accounts.length === 0) reject(err);
         else {
           let account = accounts[0];
@@ -90,7 +90,7 @@ module.exports = {
               parseFloat(account.reward_vesting_balance) > 0
             ) && this.BOT_PROD
           ) {
-            steem.broadcast.claimRewardBalance(
+            hive.broadcast.claimRewardBalance(
               this.BOT_KEY,
               this.BOT_ACCOUNT_NAME,
               account.reward_steem_balance,
@@ -100,7 +100,7 @@ module.exports = {
                 // if no error then update account
                 if (err) reject(err);
                 else {
-                  steem.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
+                  hive.api.getAccounts([this.BOT_ACCOUNT_NAME], (err, accounts) => {
                     if (err || accounts.length === 0) {
                       reject(err);
                     } else {
@@ -241,14 +241,14 @@ module.exports = {
   getRsharesToHBDFactor() {
     return new Promise((resolve, reject) => {
       // get reward fund for posts
-      steem.api.getRewardFund('post', (err, fund) => {
+      hive.api.getRewardFund('post', (err, fund) => {
         if (err) reject(err);
         else {
           const rewardBalance = parseFloat(fund.reward_balance.replace(' HIVE', ''));
           const recentClaims = parseInt(fund.recent_claims, 10);
 
           // get HBD price factor
-          steem.api.getCurrentMedianHistoryPrice((errs, price) => {
+          hive.api.getCurrentMedianHistoryPrice((errs, price) => {
             if (errs) reject(errs);
             else {
               const HBDPrice = parseFloat(price.base.replace(' HBD', ''));
@@ -317,7 +317,7 @@ module.exports = {
     ];
 
     if (this.BOT_PROD) {
-      return steem.broadcast.sendAsync({
+      return hive.broadcast.sendAsync({
         extensions: [],
         operations,
       }, keys).catch((err) => {
@@ -327,7 +327,7 @@ module.exports = {
   },
   upvote(options) {
     const {comment, weight} = options;
-    return steem.api.getActiveVotesAsync(comment.author, comment.permlink)
+    return hive.api.getActiveVotesAsync(comment.author, comment.permlink)
       .filter(vote => vote.voter === this.BOT_ACCOUNT_NAME && vote.percent > 0)
       .then((votes) => {
         if (votes.length > 0) { // Already voted?
@@ -335,7 +335,7 @@ module.exports = {
         }
 
         if (this.BOT_PROD) {
-          return steem.broadcast.voteAsync(
+          return hive.broadcast.voteAsync(
             this.BOT_KEY, this.BOT_ACCOUNT_NAME, comment.author, comment.permlink, weight,
           ).then((results) => {
             // Handle results
@@ -347,7 +347,7 @@ module.exports = {
   },
   transfer(to, amount, memo) {
     if (this.BOT_PROD) {
-      steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, `${amount.toFixed(3)} HBD`, memo, (err) => {
+      hive.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, `${amount.toFixed(3)} HBD`, memo, (err) => {
         if (err) {
           console.log(err);
         }
