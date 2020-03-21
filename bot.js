@@ -17,7 +17,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
   // get data from blockchain
   console.log('Fetching data...');
-  const rsharesToSBDFactor = await helper.getRsharesToSBDFactor();
+  const rsharesToHBDFactor = await helper.getRsharesToHBDFactor();
   const delegators = await helper.getDelegators();
   const account = await helper.getAccount();
   const pot = await helper.getPot();
@@ -73,7 +73,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
 
         // transfer winner pot
         if (pot.winner >= 0.001) {
-          console.log(`Transferring ${pot.winner.toFixed(3)} SBD to ${winnerCommand.author}...`);
+          console.log(`Transferring ${pot.winner.toFixed(3)} HBD to ${winnerCommand.author}...`);
           helper.transfer(winnerCommand.author, pot.winner, helper.getWinnerTransferMemo(
             winnerCommand.author, pot.winner, lastPostMeta.storyNumber,
           ));
@@ -104,7 +104,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
         loserTransfers.forEach((transfer) => {
           const amount = transfer.contributions * singleLoserPot;
           if (amount >= 0.001) {
-            console.log(`@${transfer.author} | ${transfer.contributions} | ${((transfer.contributions / loserCommands.length) * 100).toFixed(2)}% | ${amount.toFixed(3)} SBD`);
+            console.log(`@${transfer.author} | ${transfer.contributions} | ${((transfer.contributions / loserCommands.length) * 100).toFixed(2)}% | ${amount.toFixed(3)} HBD`);
             helper.transfer(transfer.author, amount, helper.getLoserTransferMemo(
               transfer.author, amount, lastPostMeta.storyNumber, transfer.contributions,
             ));
@@ -135,7 +135,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           console.log('Delegator | Delegation | Delegation Share | Reward')
           delegatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log(`@${transfer.delegator} | ${transfer.sp.toFixed(0)} SP | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} SBD`);
+              console.log(`@${transfer.delegator} | ${transfer.sp.toFixed(0)} SP | ${transfer.percentage.toFixed(2)}% | ${transfer.amount.toFixed(3)} HBD`);
               helper.transfer(
                 transfer.delegator, transfer.amount, helper.getDelegatorTransferMemo(
                   transfer.delegator, transfer.amount, lastPostMeta.storyNumber, transfer.sp,
@@ -160,7 +160,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
               curator: curator.voter,
               percentage,
               amount: pot.curators * percentage / 100,
-              sbd: curator.rshares * rsharesToSBDFactor,
+              sbd: curator.rshares * rsharesToHBDFactor,
             });
           });
 
@@ -169,7 +169,7 @@ if (!helper.BOT_ACCOUNT_NAME || !helper.BOT_KEY || !helper.BOT_TAGS || !helper.B
           console.log('Curator | Curation Share (Value) | Reward')
           curatorTransfers.forEach((transfer) => {
             if (transfer.amount >= 0.001) {
-              console.log(`@${transfer.curator} | ${transfer.percentage.toFixed(2)}% (${transfer.sbd.toFixed(3)} SBD) | ${transfer.amount.toFixed(3)} SBD`);
+              console.log(`@${transfer.curator} | ${transfer.percentage.toFixed(2)}% (${transfer.sbd.toFixed(3)} HBD) | ${transfer.amount.toFixed(3)} HBD`);
               helper.transfer(transfer.curator, transfer.amount, helper.getCuratorTransferMemo(
                 transfer.curator, transfer.amount, lastPostMeta.storyNumber, transfer.sbd,
               ));

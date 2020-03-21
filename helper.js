@@ -162,7 +162,7 @@ module.exports = {
         if (comment.json_metadata) {
           const command = JSON.parse(comment.json_metadata);
           if (
-            // image property seems to be removed when empty and comment edited on steemit,
+            // image property seems to be removed when empty and comment edited on the condenser,
             // idk why... comment property doesn't seem to be removed
             // we'll only check for type now
             // command.hasOwnProperty('appendText') &&
@@ -238,23 +238,23 @@ module.exports = {
       .replace('{{sbd}}', sbd.toFixed(3))
       .replace('{{storyNumber}}', storyNumber);
   },
-  getRsharesToSBDFactor() {
+  getRsharesToHBDFactor() {
     return new Promise((resolve, reject) => {
       // get reward fund for posts
       steem.api.getRewardFund('post', (err, fund) => {
         if (err) reject(err);
         else {
-          const rewardBalance = parseFloat(fund.reward_balance.replace(' STEEM', ''));
+          const rewardBalance = parseFloat(fund.reward_balance.replace(' HIVE', ''));
           const recentClaims = parseInt(fund.recent_claims, 10);
 
-          // get SBD price factor
+          // get HBD price factor
           steem.api.getCurrentMedianHistoryPrice((errs, price) => {
             if (errs) reject(errs);
             else {
-              const SBDPrice = parseFloat(price.base.replace(' SBD', ''));
+              const HBDPrice = parseFloat(price.base.replace(' HBD', ''));
 
-              // calculate SBD value for each vote
-              resolve(rewardBalance / recentClaims * SBDPrice);
+              // calculate HBD value for each vote
+              resolve(rewardBalance / recentClaims * HBDPrice);
             }
           });
         }
@@ -298,7 +298,7 @@ module.exports = {
         {
           author: this.BOT_ACCOUNT_NAME,
           permlink,
-          max_accepted_payout: '1000000.000 SBD',
+          max_accepted_payout: '1000000.000 HBD',
           percent_steem_dollars: 5000,
           allow_votes: true,
           allow_curation_rewards: true,
@@ -347,7 +347,7 @@ module.exports = {
   },
   transfer(to, amount, memo) {
     if (this.BOT_PROD) {
-      steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, `${amount.toFixed(3)} SBD`, memo, (err) => {
+      steem.broadcast.transfer(this.BOT_KEY, this.BOT_ACCOUNT_NAME, to, `${amount.toFixed(3)} HBD`, memo, (err) => {
         if (err) {
           console.log(err);
         }

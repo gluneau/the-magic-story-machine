@@ -1,16 +1,16 @@
 # The Magic Story Machine
 
-The Magic Story Machine is a bot for the Steem network. The bot publishes a post everyday and tells a story that is made up by the community.
+The Magic Story Machine is a bot for the Hive network. The bot publishes a post everyday and tells a story that is made up by the community.
 
 More details:
 
 - http://the-magic-frog.com
-- https://steemit.com/utopian-io/@mkt/the-magic-frog-collaborative-storytelling-bot-and-website
+- https://hive.blog/utopian-io/@mkt/the-magic-frog-collaborative-storytelling-bot-and-website
 
 ```
 git clone https://github.com/mktcode/the-magic-story-machine.git
 cd the-magic-story-machine
-npm i
+yarn
 ```
 
 You also need to export environment variables by putting them in `.env` file, the bot will automatically source it:
